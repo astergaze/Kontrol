@@ -7,12 +7,12 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false // Necesario si usás nodeIntegration
+      contextIsolation: false 
     }
   })
 
   win.loadFile(path.join(__dirname, 'dist', 'index.html'))
-  win.webContents.openDevTools() // Para ver errores de consola
+  win.webContents.openDevTools() 
 }
 
 app.whenReady().then(createWindow)

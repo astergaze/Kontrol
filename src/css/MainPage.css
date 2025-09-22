@@ -1,15 +1,19 @@
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
+/* Fondo y tipografía general */
+.mainPage {
   background-color: #1e1e1e;
-  color: white;
+  color: #ffffff;
   font-family: Arial, sans-serif;
+  min-height: 100vh;
 }
 
+/* Encabezado */
 header {
   display: flex;
   justify-content: space-between;
@@ -18,14 +22,11 @@ header {
   border-bottom: 2px solid #333;
 }
 
+/* Logo */
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.logo img {
-  width: 40px;
 }
 
 .logo h1 {
@@ -36,6 +37,7 @@ header {
   color: #48a0ff;
 }
 
+/* Usuario */
 .usuario {
   display: flex;
   align-items: center;
@@ -43,10 +45,11 @@ header {
 }
 
 .iconos-superior span {
-  margin-right: 10px;
   font-size: 20px;
+  margin-right: 10px;
 }
 
+/* Perfil */
 .perfil {
   display: flex;
   align-items: center;
@@ -56,17 +59,16 @@ header {
   border-radius: 20px;
 }
 
+/* Contenido principal */
 main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 20px;
-    padding-top: 250px;
-    padding-left: 200px;
-    padding-right: 200px;
-    align-content: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 100px 200px 40px;
+  align-content: center;
 }
 
+/* Tarjetas */
 .card {
   background: linear-gradient(to bottom, #003366, #000000);
   padding: 20px;
@@ -74,7 +76,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: white;
+  color: #ffffff;
 }
 
 .card h2 {
@@ -88,11 +90,7 @@ main {
   margin-bottom: 20px;
 }
 
-.card img {
-  width: 60px;
-  align-self: center;
-}
-
+/* Variantes de tamaño */
 .grande {
   grid-column: span 2;
 }
