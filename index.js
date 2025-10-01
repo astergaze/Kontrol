@@ -15,4 +15,7 @@ function createWindow() {
   win.webContents.openDevTools() 
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(()=> {
+  require('./backend/server');
+  createWindow();
+})
