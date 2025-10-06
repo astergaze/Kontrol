@@ -105,3 +105,24 @@ header {
 .azul {
   color: #00aaff;
 }
+
+.icono-chat{
+  transform: scale(0.1);
+}
+
+.icono-bell{
+   transform: scale(0.1);
+}
+
+.icono-user{
+   transform: scale(0.6);
+}
+
+.logo{
+  transform: scale(0.5);
+   margin-left: -80px;
+}
+
+.iconos-superior{
+ transform: scale(0.8)
+}

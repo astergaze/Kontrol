@@ -14,13 +14,7 @@
 }
 
 /* Encabezado */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 2px solid #333;
-}
+
 
 /* Logo */
 .logo {
@@ -97,4 +91,25 @@ main {
 
 .pequena {
   grid-column: span 1;
+}
+
+.icono-chat{
+  transform: scale(0.1);
+}
+
+.icono-bell{
+   transform: scale(0.1);
+}
+
+.icono-user{
+   transform: scale(0.1);
+  }
+
+.logo{
+  transform: scale(0.5);
+  margin-left: -80px;
+}
+
+.iconos-superior{
+ transform: scale()
 }
