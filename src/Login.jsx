@@ -26,7 +26,7 @@ const Login = () => {
       <div className='loginForm'>
         <h2>Iniciar Sesión</h2>
         <p>Ingrese su DNI</p>
-        <input type="number" name="DNI" id="DNIForm" className='loginInput' />
+        <input type="text" name="DNI" id="DNIForm" className='loginInput' maxLength={8} pattern="[0-9]{8}" />
         <p>Ingrese su contraseña</p>
         <input type="password" name="Password" id="passwordForm" className='loginInput' />
         <button className='loginBtn' onClick={handleLogin}>Ingresar</button>

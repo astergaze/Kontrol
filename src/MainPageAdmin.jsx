@@ -1,7 +1,15 @@
 import React from 'react';
 import './css/MainPageAdmin.css';
+import { useNavigate } from 'react-router-dom';
 
 const MainPageAdmin = () => {
+  
+  const navigate = useNavigate();
+
+  const handleSignUp = () => {
+    navigate('/signup');
+  };
+
   return (
     <>
     <div className="mainPageAdmin">
@@ -51,7 +59,7 @@ const MainPageAdmin = () => {
             <p>Ve las solicitudes de materiales que fueron hechas por los operadores.</p>
           </section>
 
-          <section className="card">
+          <section className="card signup" onClick={handleSignUp}>
             <h2><span className="azul">Alta de Operadores.</span></h2>
             <p>Da de alta a los nuevos usuarios que ingresen a Kingdom.</p>
           </section>
