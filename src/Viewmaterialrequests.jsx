@@ -22,7 +22,7 @@ nombre
             <li>
                 <p>Material:{datos.dato}</p>
                 <p>Orden de trabajo:{datos.dato}</p>
-                <input type="button" value="" id="" />
+                <input type="button" value="" id=" " />
                 <input type="button" value="" id="" />
             </li>
         )
