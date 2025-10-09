@@ -35,27 +35,27 @@ const MainPageAdmin = () => {
       <main className="contenedor-general-cards">
         <div  className="contenedor-cards">
           <section className="card">
-            <h2><span className="azul">Entrada del trabajo.</span></h2>
+            <h2><span className="entrada"> <img className="logo1" src="https://i.imgur.com/CTGB4c8.png" alt="logo entrada de trabajo" />Entrada del trabajo.</span></h2>
             <p>Cliente, cotización, generación de orden de trabajo.</p>
           </section>
 
           <section className="card">
-            <h2><span className="azul">Lista de precios.</span></h2>
+            <h2><span className="lista">Lista de precios.</span></h2>
             <p>Precios actualizados de los productos.</p>
           </section>
 
           <section className="card">
-            <h2><span className="azul">Generar cotización.</span></h2>
+            <h2><span className="cotizacion">Generar cotización.</span></h2>
             <p>Generación de PDF de cotización.</p>
           </section>
 
           <section className="card">
-            <h2><span className="azul">Vista de trabajos.</span></h2>
+            <h2><span className="vista">Vista de trabajos.</span></h2>
             <p>Vea cuáles son los trabajos<br />priorizados según la fecha de entrega</p>
           </section>
 
           <section className="card">
-            <h2><span className="azul">Ver solicitudes de materiales.</span></h2>
+            <h2><span className="solicitud">Ver solicitudes de materiales.</span></h2>
             <p>Ve las solicitudes de materiales que fueron hechas por los operadores.</p>
           </section>
 

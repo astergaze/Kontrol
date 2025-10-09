@@ -13,9 +13,6 @@
   min-height: 100vh;
 }
 
-/* Encabezado */
-
-
 /* Logo */
 .logo {
   display: flex;
@@ -40,17 +37,18 @@
 
 .iconos-superior span {
   font-size: 20px;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 /* Perfil */
 .perfil {
+  transform: scale(0.9);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   background-color: #2c2c2c;
-  padding: 10px 15px;
-  border-radius: 20px;
+  padding: 5px 5px;
+  border-radius: 20px;  
 }
 
 /* Contenido principal */
@@ -93,23 +91,20 @@ main {
   grid-column: span 1;
 }
 
-.icono-chat{
-  transform: scale(0.1);
-}
-
-.icono-bell{
-   transform: scale(0.1);
-}
-
 .icono-user{
-   transform: scale(0.1);
-  }
+   transform: scale(0.4);
+}
 
 .logo{
-  transform: scale(0.5);
-  margin-left: -80px;
+  transform: scale(0.6);
+   margin-left: -70px;
 }
 
 .iconos-superior{
- transform: scale()
+ transform: scale(0.5);
+gap: 50px;
+margin-right: -80px;
 }
+
+
+
