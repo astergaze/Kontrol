@@ -1,4 +1,5 @@
 const express = require('express');
+const sequelize = require("./config/db");
 const app = express();
 const port = 3001;
 app.post('/api/hello', (req, res) => {
