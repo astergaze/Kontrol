@@ -6,7 +6,7 @@ app.post('/api/hello', (req, res) => {
     res.status(200).json({ message: 'Hola desde el backend!' });
 });
 
-app.listen(port, async () => {
+app.listen(port, () => {
     sequelize.sync({ force: false })
     console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });
