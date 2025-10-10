@@ -1,28 +1,10 @@
 import React from 'react';
 import './css/JobCreation.css';
-
+import Header from './Header';
 const MainPage = () => {
-  return (
+  return (<>
+  <Header/>
     <div className="mainPage">
-      <header>
-        <div className="logo">
-          <img src="https://i.imgur.com/2ToRgc7.png" alt="Logo Kingdom"/>
-        </div>
-        <div className="usuario">
-          <div className="iconos-superior">
-            <span className="chat"><img src="https://i.imgur.com/mwR5HzO.png" alt="logo chat" /></span>
-            <span className="bell"><img src="https://i.imgur.com/S4nFOIE.png" alt="logo campana" /></span>
-          </div>
-          <div className="perfil">
-            <span className="icono-user"><img src="https://i.imgur.com/ZBIlQwo.png" alt="logo usuario" /></span>
-            <div>
-              <p>UsuarioEjemplo</p>
-              <small>Operador</small>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main>
         <section className="card grande">
           <h2>Vista de trabajos.</h2>
@@ -40,6 +22,7 @@ const MainPage = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 

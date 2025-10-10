@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './css/signup.css';
-
+import Header from './Header';
 const SignUp = () => {
   const navigate = useNavigate();
   
@@ -9,7 +9,8 @@ const SignUp = () => {
     navigate('/main');
   };
 
-  return (
+  return (<>
+  <Header/>
     <div className='mainCont'>
       <button className='return' onClick={Return}>Volver</button>
       <div className='signupForm'>
@@ -30,6 +31,7 @@ const SignUp = () => {
         <button className='signupBtn'>Dar Alta</button>
       </div>
     </div>
+    </>
   );
 };
 

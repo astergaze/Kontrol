@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/MainPageAdmin.css';
 import { useNavigate } from 'react-router-dom';
-
+import Header from './Header';
 const MainPageAdmin = () => {
   
   const navigate = useNavigate();
@@ -21,26 +21,8 @@ const MainPageAdmin = () => {
 
   return (
     <>
+    <Header/>
     <div className="mainPageAdmin">
-      <header>
-        <div className="logo">
-            <img src="https://i.imgur.com/2ToRgc7.png" alt="Logo Kingdom" />
-        </div>
-        <div className="usuario">
-          <div className="iconos-superior">
-            <span className="icono-chat"><img src="https://i.imgur.com/mwR5HzO.png" alt="logo chat" /></span>
-            <span className="icono-bell"><img src="https://i.imgur.com/S4nFOIE.png" alt="logo campana" /></span>
-          </div>
-          <div className="perfil">
-            <span className="icono-user"><img src="https://i.imgur.com/ZBIlQwo.png" alt="logo usuario" /></span>
-            <div>
-              <p>UsuarioEjemplo</p>
-              <small>Administrador</small>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="contenedor-general-cards">
         <div  className="contenedor-cards">
           <section className="card jobcreation" onClick={handleJobCreation}>
