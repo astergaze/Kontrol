@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/MainPage.css';
 
-const MainPage = () => {
+const JobCreation = () => {
   return (
     <div className="mainPage">
       <header>
@@ -43,4 +43,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default JobCreation;

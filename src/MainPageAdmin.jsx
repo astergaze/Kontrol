@@ -10,6 +10,15 @@ const MainPageAdmin = () => {
     navigate('/signup');
   };
 
+  const handleJobCreation = () =>{
+    navigate('/jobcreation')
+  };
+
+    const handleMaterialRequest = () =>{
+    navigate('/materialrequest')
+  };
+
+
   return (
     <>
     <div className="mainPageAdmin">
@@ -34,7 +43,7 @@ const MainPageAdmin = () => {
 
       <main className="contenedor-general-cards">
         <div  className="contenedor-cards">
-          <section className="card">
+          <section className="card jobcreation" onClick={handleJobCreation}>
             <h2><span className="entrada"> <img className="logo1" src="https://i.imgur.com/CTGB4c8.png" alt="logo entrada de trabajo" />Entrada del trabajo.</span></h2>
             <p>Cliente, cotización, generación de orden de trabajo.</p>
           </section>
@@ -54,7 +63,7 @@ const MainPageAdmin = () => {
             <p>Vea cuáles son los trabajos<br />priorizados según la fecha de entrega</p>
           </section>
 
-          <section className="card">
+          <section className="card materialrequest" onClick={handleMaterialRequest}>
             <h2><span className="solicitud">Ver solicitudes de materiales.</span></h2>
             <p>Ve las solicitudes de materiales que fueron hechas por los operadores.</p>
           </section>

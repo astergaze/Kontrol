@@ -1,23 +1,10 @@
 import React from 'react';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './css/signup.css';
 
 const SignUp = () => {
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post('http://localhost:3001/api/hello');
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error al hacer la petición:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  
   const Return = () => {
     navigate('/main');
   };
