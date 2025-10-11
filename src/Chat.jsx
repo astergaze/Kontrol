@@ -12,7 +12,7 @@ const Chat = () => {
   return (
     <>
       <Header />
-      <div className="mainCont">
+      <div className="chatMainCont">
         <button className="return" onClick={Return}>
           Volver
         </button>

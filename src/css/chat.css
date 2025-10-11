@@ -1,66 +1,67 @@
-/* .mainCont{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-} */
-
-.chatCont{
-    background: linear-gradient(#010101 0%, #222C33 50%, #0E3A5B 100%);
-    width: 90%;
-    height: 70vh;
-    border-radius: 2rem;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 2rem;
-    position: relative;
+.chatMainCont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: auto;
+  width: 100%;
+  position: relative;
+  padding-top: 5rem;
 }
 
-.users{
-    border-right: 2px solid #ffffff;
-    height: 100%;
-    width: 0;
-    position: absolute;
-    left: 35%;
-    top: 50%;
-    transform: translateY(-50%);
+.chatCont {
+  background: linear-gradient(#010101 0%, #222c33 50%, #0e3a5b 100%);
+  width: 90%;
+  height: 70vh;
+  border-radius: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem;
+  position: relative;
 }
 
-.chatInputArea{
-    width: 60%;
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.users {
+  border-right: 2px solid #ffffff;
+  height: 100%;
+  width: 0;
+  position: absolute;
+  left: 35%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-#chatBar{
-    border-radius: 0.5rem;
-    background-color: #ffffff;
-    height: 2rem;
-    flex-grow: 1;
-    padding: 0 0.75rem;
-    border: none;
-    outline: none;
+.chatInputArea {
+  width: 60%;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
+#chatBar {
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  height: 2rem;
+  flex-grow: 1;
+  padding: 0 0.75rem;
+  border: none;
+  outline: none;
+}
 
 #addFile,
-#sendMessage
-{
-    width: 2rem;
-    height: 2rem;
-    cursor:pointer;
-    object-fit: contain;
+#sendMessage {
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  object-fit: contain;
 }
 
-#addFile{
-    background-color: white;
-    border-radius: 3rem;
+#addFile {
+  background-color: white;
+  border-radius: 3rem;
 }

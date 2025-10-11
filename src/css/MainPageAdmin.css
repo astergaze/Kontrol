@@ -3,16 +3,15 @@
   background-color: #1e1e1e;
   color: white;
   font-family: Arial, sans-serif;
-  min-height: 100vh;
 }
 .contenedor-general-cards {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    height: 80dvh;
-    padding: 1rem;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 80dvh;
+  padding: 1rem;
+  width: 100%;
 }
 /* Encabezado */
 header {
@@ -57,7 +56,7 @@ header {
   align-items: center;
   background-color: #2c2c2c;
   padding: 5px 10px;
-  border-radius: 20px;  
+  border-radius: 20px;
 }
 
 /* Contenedor de tarjetas */
@@ -106,21 +105,21 @@ header {
   color: #00aaff;
 }
 
-.icono-user{
-   transform: scale(0.4);
+.icono-user {
+  transform: scale(0.4);
 }
 
-.logo{
+.logo {
   transform: scale(0.6);
   margin-left: -70px;
 }
 
-.iconos-superior{
- transform: scale(0.5);
- gap: 50px;
- margin-right: -80px;
+.iconos-superior {
+  transform: scale(0.5);
+  gap: 50px;
+  margin-right: -80px;
 }
-img.logo1{
+img.logo1 {
   position: absolute;
   left: 887px;
   transform: translateY(23px) scale(2);

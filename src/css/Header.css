@@ -48,23 +48,23 @@ header {
   border-radius: 20px;
 }
 
-.icono-chat{
+.icono-chat {
   transform: scale(0.1);
 }
 
-.icono-bell{
-   transform: scale(0.1);
+.icono-bell {
+  transform: scale(0.1);
 }
 
-.icono-user{
-   transform: scale(0.6);
+.icono-user {
+  transform: scale(0.6);
 }
 
-.logo{
+.logo {
   transform: scale(0.5);
-   margin-left: -80px;
+  margin-left: -80px;
 }
 
-.iconos-superior{
- transform: scale(0.8)
+.iconos-superior {
+  transform: scale(0.8);
 }
