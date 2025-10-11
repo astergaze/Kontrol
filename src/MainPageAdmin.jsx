@@ -17,6 +17,10 @@ const MainPageAdmin = () => {
     const handleMaterialRequest = () =>{
     navigate('/materialrequest')
   };
+  
+      const handleChat = () =>{
+    navigate('/chat')
+  };
 
 
   return (
@@ -28,7 +32,7 @@ const MainPageAdmin = () => {
         </div>
         <div className="usuario">
           <div className="iconos-superior">
-            <span className="icono-chat"><img src="https://i.imgur.com/mwR5HzO.png" alt="logo chat" /></span>
+            <span className="icono-chat"><img src="https://i.imgur.com/mwR5HzO.png" alt="logo chat" onClick={handleChat}/></span>
             <span className="icono-bell"><img src="https://i.imgur.com/S4nFOIE.png" alt="logo campana" /></span>
           </div>
           <div className="perfil">

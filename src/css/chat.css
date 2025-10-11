@@ -1,0 +1,66 @@
+.mainCont{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.chatCont{
+    background: linear-gradient(#010101 0%, #222C33 50%, #0E3A5B 100%);
+    width: 70%;
+    height: 90%;
+    border-radius: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2rem;
+    position: relative;
+}
+
+.users{
+    border-right: 2px solid #ffffff;
+    height: 100%;
+    width: 0;
+    position: absolute;
+    left: 35%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.chatInputArea{
+    width: 60%;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#chatBar{
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    height: 2rem;
+    flex-grow: 1;
+    padding: 0 0.75rem;
+    border: none;
+    outline: none;
+}
+
+
+#addFile,
+#sendMessage
+{
+    width: 2rem;
+    height: 2rem;
+    cursor:pointer;
+    object-fit: contain;
+}
+
+#addFile{
+    background-color: white;
+    border-radius: 3rem;
+}

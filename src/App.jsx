@@ -5,6 +5,8 @@ import SignUp from './SignUp'
 import JobCreation from './JobCreation'
 import MainPageAdmin from './MainPageAdmin';
 import MaterialRequest from './Viewmaterialrequests';
+import Chat from './Chat';
+
 const App = () => {
   return (
     <Routes>
@@ -13,8 +15,10 @@ const App = () => {
       <Route path="/signup" element={<SignUp/>} /> {/* Pagina de alta de operadores */}
       <Route path="/jobcreation" element={<JobCreation/>} /> {/* Pagina de entrada de trabajos */}
       <Route path="/materialrequest" element={<MaterialRequest/>} /> {/* Pagina de entrada de trabajos */}
+      <Route path="/chat" element={<Chat/>} /> {/* Pagina de entrada de trabajos */}
     </Routes>
   );
 };
 
 export default App;
+  
