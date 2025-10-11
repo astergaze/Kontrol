@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/MainPageAdmin.css';
 import { useNavigate } from 'react-router-dom';
-
+import Header from './Header';
 const MainPageAdmin = () => {
   
   const navigate = useNavigate();
@@ -25,6 +25,7 @@ const MainPageAdmin = () => {
 
   return (
     <>
+    <Header/>
     <div className="mainPageAdmin">
       <header>
         <div className="logo">

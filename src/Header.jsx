@@ -17,7 +17,7 @@ const Header = () => {
             <span className="icono-user"><img src="https://i.imgur.com/ZBIlQwo.png" alt="logo usuario" /></span>
             <div>
               <p>UsuarioEjemplo</p>
-              <small>Operador</small>
+              <small>Administrador</small>
             </div>
           </div>
         </div>
