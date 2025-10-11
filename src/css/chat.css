@@ -1,15 +1,15 @@
-.mainCont{
+/* .mainCont{
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100%;
-}
+} */
 
 .chatCont{
     background: linear-gradient(#010101 0%, #222C33 50%, #0E3A5B 100%);
-    width: 70%;
-    height: 90%;
+    width: 90%;
+    height: 70vh;
     border-radius: 2rem;
     box-sizing: border-box;
     display: flex;
