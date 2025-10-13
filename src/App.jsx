@@ -7,6 +7,7 @@ import MainPageAdmin from "./MainPageAdmin";
 import MaterialRequest from "./Viewmaterialrequests";
 import Chat from "./Chat";
 import PriceListAdmin from "./PriceListAdmin"
+import PreViewJob from "./PreViewJob";
 
 const App = () => {
   return (
@@ -23,6 +24,8 @@ const App = () => {
       {/* Pagina de entrada de trabajos */}
       <Route path="/PriceListAdmin" element={<PriceListAdmin />} />{" "}
       {/* Pagina de entrada de trabajos */}
+      <Route path="/PreViewJob" element={<PreViewJob />} />{" "}
+      {/* Pagina de vista previa de trabajos*/}
     </Routes>
   );
 };
