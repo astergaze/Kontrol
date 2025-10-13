@@ -2,10 +2,9 @@ import React from "react";
 import "./css/MainPage.css";
 import Header from "./Header";
 const JobCreation = () => {
-  return (
-    <div className="mainPage">
-      <Header />
-
+  return (<>
+  <Header />
+    <div className="mainPage">  
       <main>
         <section className="card grande">
           <h2>Vista de trabajos.</h2>
@@ -30,6 +29,7 @@ const JobCreation = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 

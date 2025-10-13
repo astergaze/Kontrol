@@ -16,6 +16,9 @@ const MainPageAdmin = () => {
   const handleMaterialRequest = () => {
     navigate("/materialrequest");
   };
+   const handlePriceListAdmin = () => {
+    navigate("/PriceListAdmin");
+  };
 
   return (
     <>
@@ -38,13 +41,12 @@ const MainPageAdmin = () => {
               <p>Cliente, cotización, generación de orden de trabajo.</p>
             </section>
 
-            <section className="card">
+            <section className="card lista" onClick={handlePriceListAdmin}>
               <h2>
                 <span className="lista">Lista de precios.</span>
               </h2>
               <p>Precios actualizados de los productos.</p>
             </section>
-
             <section className="card">
               <h2>
                 <span className="cotizacion">Generar cotización.</span>

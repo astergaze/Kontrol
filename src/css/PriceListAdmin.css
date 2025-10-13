@@ -1,0 +1,97 @@
+.PriceList {
+  background-color: #405f7f; /* Fondo azul oscuro */
+  border-radius: 15px;
+  max-width: 1500px;
+  margin: 70px auto;
+  color: #cbd4e2;
+ position: relative;
+}
+
+.returnf {
+  background-color: #2e485c;
+  border-radius: 9px;
+  border: 1px solid #162938;
+  width: 7rem;
+  height: 3rem;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.2s ease;
+  position: absolute;
+  top: 11.8%;
+  left: 0%;
+  margin: 1rem;
+}
+
+.return:hover {
+  background-color: #5172a6;
+}
+
+.lista-precios {
+  background-color: #405f7f;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-around;
+  color: #e1e9f3;
+  PADDING-BLOCK-END:70px;
+}
+
+.lista-precios > div {
+  background-color: #324c60;
+  border-radius: 15px;
+  padding: 20px;
+  width: 28%;
+  box-sizing: border-box;
+}
+
+.titulo-principal {
+  background-color: #2a425b;
+  padding: 12px 24px;
+  border-radius: 16px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+ 
+  color: #cbd4e2;
+}
+
+
+.lista-precios h3 {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.lista-precios ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista-precios ul li {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.precio {
+  float: right;
+  font-weight: 600;
+}
+
+.modificar-btn {
+  background-color: #3a516a;
+  color: #cbd4e2;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  float: right;
+  margin-top: -50px;
+  margin-right: 50px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.modificar-btn:hover {
+  background-color: #5172a6;
+}
