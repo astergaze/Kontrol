@@ -6,6 +6,7 @@ import JobCreation from "./JobCreation";
 import MainPageAdmin from "./MainPageAdmin";
 import MaterialRequest from "./Viewmaterialrequests";
 import Chat from "./Chat";
+import PreViewJob from "./PreViewJob";
 
 const App = () => {
   return (
@@ -20,6 +21,8 @@ const App = () => {
       {/* Pagina de entrada de trabajos */}
       <Route path="/chat" element={<Chat />} />{" "}
       {/* Pagina de entrada de trabajos */}
+      <Route path="/PreViewJob" element={<PreViewJob />} />{" "}
+      {/* Pagina de vista previa de trabajos*/}
     </Routes>
   );
 };

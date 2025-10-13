@@ -17,6 +17,10 @@ const MainPageAdmin = () => {
     navigate("/materialrequest");
   };
 
+  const handlePreViewJob = () =>{
+    navigate("/PreViewJob")
+  }
+
   return (
     <>
       <Header />
@@ -69,7 +73,7 @@ const MainPageAdmin = () => {
               <p>Generación de PDF de cotización.</p>
             </section>
 
-            <section className="card">
+            <section className="card preView" onClick={handlePreViewJob}>
               <h2>
                 <span className="vista">
                   Vista de trabajos.
