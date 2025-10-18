@@ -19,7 +19,9 @@ const MainPageAdmin = () => {
    const handlePriceListAdmin = () => {
     navigate("/PriceListAdmin");
   };
-
+  const handleQuotation = () =>{
+    navigate("/Quotation")
+  }
   const handlePreViewJob = () =>{
     navigate("/PreViewJob")
   }
@@ -60,7 +62,7 @@ const MainPageAdmin = () => {
               </h2>
               <p>Precios actualizados de los productos.</p>
             </section>
-            <section className="card">
+            <section className="card" onClick={handleQuotation}>
               <h2>
                 <span className="cotizacion">
                   Generar cotización.

@@ -8,6 +8,8 @@ import MaterialRequest from "./Viewmaterialrequests";
 import Chat from "./Chat";
 import PriceListAdmin from "./PriceListAdmin"
 import PreViewJob from "./PreViewJob";
+import Quotation from "./Quotation";
+import QuotePDF from "./QuotePDF"
 
 const App = () => {
   return (
@@ -26,6 +28,10 @@ const App = () => {
       {/* Pagina de entrada de trabajos */}
       <Route path="/PreViewJob" element={<PreViewJob />} />{" "}
       {/* Pagina de vista previa de trabajos*/}
+      <Route path="/Quotation" element={<Quotation />} />{" "}
+      {/*Pagina previa a la generacion del pdf */}
+      <Route path="/QuotePDF" element={<QuotePDF />} />{" "}
+      {/*Pagina de generacion del pdf */}
     </Routes>
   );
 };
