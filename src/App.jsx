@@ -10,7 +10,7 @@ import PriceListAdmin from "./PriceListAdmin"
 import PreViewJob from "./PreViewJob";
 import Quotation from "./Quotation";
 import QuotePDF from "./QuotePDF"
-
+import PriceListuser from "./PriceListuser"
 const App = () => {
   return (
     <Routes>
@@ -32,6 +32,7 @@ const App = () => {
       {/*Pagina previa a la generacion del pdf */}
       <Route path="/QuotePDF" element={<QuotePDF />} />{" "}
       {/*Pagina de generacion del pdf */}
+      <Route path="/PriceListuser" element={<PriceListuser />} />{" "}
     </Routes>
   );
 };
