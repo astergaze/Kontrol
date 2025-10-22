@@ -12,34 +12,31 @@ header {
   border-bottom: 2px solid #333;
 }
 
-/* Logo */
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
+  transform: scale(0.5);
+  margin-left: -80px;
 }
 
-.logo h1 {
-  font-size: 20px;
-}
-
-.logo h1 span {
-  color: #48a0ff;
-}
-
-/* Usuario */
 .usuario {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.iconos-superior span {
-  font-size: 20px;
-  margin-right: 10px;
+.iconos-superior {
+  display: flex;
+  align-items: center;
+  transform: scale(0.8);
+  gap: 10px;
 }
 
-/* Perfil */
+.iconos-superior .chat {
+  font-size: 20px;
+}
+
 .perfil {
   display: flex;
   align-items: center;
@@ -49,43 +46,28 @@ header {
   border-radius: 20px;
 }
 
-.icono-chat {
-  transform: scale(0.1);
-}
-
-.icono-bell {
-  transform: scale(0.1);
-}
-
 .icono-user {
   transform: scale(0.6);
 }
 
-.logo {
-  transform: scale(0.5);
-  margin-left: -80px;
-}
-
-.iconos-superior {
-  transform: scale(0.8);
-}
-
-.usuario {
+.notif-container,
+.perfil-container {
   position: relative;
 }
 
 .menu {
   position: absolute;
   top: 100%;
+  right: 0;
   display: flex;
   flex-direction: column;
-  right: 0;
   background-color: #2e485c;
   border: 1px solid #162938;
   border-radius: 1rem;
   z-index: 1000;
   width: 12rem;
   overflow: hidden;
+  margin-top: 8px;
 }
 
 .menu div {
@@ -94,10 +76,39 @@ header {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 100%;
   padding: 1rem;
 }
 
 .menu div:hover {
   background-color: #3e5d75;
+}
+
+.notifMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #2e485c;
+  border: 1px solid #162938;
+  border-radius: 1rem;
+  z-index: 1000;
+  width: 25rem;
+  margin-top: 8px;
+  overflow-y: auto;
+  max-height: 12rem;
+}
+/*Futura integracion al darle click*/
+.notifMenu > div {
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+  cursor: pointer; 
+}
+.notifMenu > div:hover {
+  background-color: #3e5d75; 
+}
+.notifMenu p {
+  font-size: 1.5rem;
+  margin: 0;
+  color: white;
 }

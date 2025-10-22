@@ -1,5 +1,4 @@
 import React from "react";
-import "../css/subcomponents/UserOptionsMenu.css";
 import changePwdImg from "../img/changePwd.png";
 import logOutImg from "../img/logOut.png";
 import { useNavigate } from "react-router-dom";
