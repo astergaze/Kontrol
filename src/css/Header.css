@@ -3,6 +3,7 @@
   color: white;
   font-family: Arial, sans-serif;
 }
+
 header {
   display: flex;
   justify-content: space-between;
@@ -67,4 +68,36 @@ header {
 
 .iconos-superior {
   transform: scale(0.8);
+}
+
+.usuario {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  display: flex;
+  flex-direction: column;
+  right: 0;
+  background-color: #2e485c;
+  border: 1px solid #162938;
+  border-radius: 1rem;
+  z-index: 1000;
+  width: 12rem;
+  overflow: hidden;
+}
+
+.menu div {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+}
+
+.menu div:hover {
+  background-color: #3e5d75;
 }

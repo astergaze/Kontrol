@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./css/Header.css";
+import UserOptionsMenu from "./subcomponents/UserOptionsMenu"; 
 import { useNavigate } from "react-router-dom";
+
 const Header = () => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const handleChat = () => {
     navigate("/chat");
   };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="mainPageheader">
       <header>
@@ -25,7 +33,7 @@ const Header = () => {
               <img src="https://i.imgur.com/S4nFOIE.png" alt="logo campana" />
             </span>
           </div>
-          <div className="perfil">
+          <div className="perfil" onClick={toggleMenu} style={{ cursor: "pointer" }}>
             <span className="icono-user">
               <img src="https://i.imgur.com/ZBIlQwo.png" alt="logo usuario" />
             </span>
@@ -34,6 +42,8 @@ const Header = () => {
               <small>Administrador</small>
             </div>
           </div>
+          
+          {isMenuOpen && <UserOptionsMenu />} 
         </div>
       </header>
     </div>
