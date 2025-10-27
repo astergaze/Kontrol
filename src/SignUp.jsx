@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/signup.css";
 import Header from "./Header";
-
+import axios from "axios";
 
 
 const SignUp = () => {

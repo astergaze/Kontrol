@@ -1,7 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-// Empresa
+// --- Modelos Base ---
+
 const Empresa = sequelize.define(
   "empresa",
   {
@@ -11,34 +12,48 @@ const Empresa = sequelize.define(
   { timestamps: false }
 );
 
-// Jefe
 const Jefe = sequelize.define(
   "jefe",
   {
-    idCoor: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    idJefe: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }, // CORREGIDO: idJefe es más claro que idCoor
     nombre: { type: DataTypes.STRING(30), allowNull: false },
     apellido: { type: DataTypes.STRING(30), allowNull: false },
   },
   { timestamps: false }
 );
 
-// Empleado
 const Empleado = sequelize.define(
   "empleado",
   {
-    idEmp: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    idEmpleado: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true }, // CORREGIDO: 'idEmpleado' para evitar colisión con Empresa
     salario: { type: DataTypes.BIGINT, allowNull: false },
     nombre: { type: DataTypes.STRING(30), allowNull: false },
     apellido: { type: DataTypes.STRING(30), allowNull: false },
-    email:{type: DataTypes.STRING(50), allowNull: false, unique: true, validate: {isEmail: true}},
-    telefono:{type: DataTypes.BIGINT(15), allowNull: false, unique:true, validate:{len: [9,15]}},
-    DNI:{type: DataTypes.BIGINT(15), allowNull: false, unique: true},
-    password: { type: DataTypes.STRING(130), allowNull: false},
+    email: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      unique: true,
+      validate: { isEmail: true },
+    },
+    telefono: {
+      type: DataTypes.STRING(20), // CORREGIDO: BIGINT no es válido y es un tipo incorrecto.
+      allowNull: false,
+      unique: true,
+      validate: { len: [9, 20] }, // Longitud ajustada
+    },
+    DNI: {
+      type: DataTypes.STRING(15), // CORREGIDO: BIGINT no es válido y es un tipo incorrecto.
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING, // CORREGIDO: STRING(130) es innecesario.
+      allowNull: false,
+    },
   },
   { timestamps: true }
 );
 
-// Cliente
 const Cliente = sequelize.define(
   "cliente",
   {
@@ -54,7 +69,6 @@ const Cliente = sequelize.define(
   { timestamps: false }
 );
 
-// Productos
 const Producto = sequelize.define(
   "productos",
   {
@@ -65,15 +79,14 @@ const Producto = sequelize.define(
   { timestamps: false }
 );
 
-// OT
 const OT = sequelize.define(
   "OT",
   {
     idOT: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     altura: { type: DataTypes.DECIMAL, allowNull: false },
     longitud: { type: DataTypes.DECIMAL, allowNull: false },
-    fechaIn: { type: DataTypes.DATE },
-    fechaFin: { type: DataTypes.DATE },
+    fechaIn: { type: DataTypes.DATEONLY }, // SUGERENCIA: DATEONLY si no necesitas la hora
+    fechaFin: { type: DataTypes.DATEONLY }, // SUGERENCIA: DATEONLY si no necesitas la hora
     colores: { type: DataTypes.STRING(10), allowNull: false },
     prioridad: { type: DataTypes.INTEGER, allowNull: false },
     original: { type: DataTypes.INTEGER },
@@ -85,10 +98,6 @@ const OT = sequelize.define(
   { timestamps: false }
 );
 
-OT.belongsTo(Producto, { foreignKey: "idProd" });
-Producto.hasMany(OT, { foreignKey: "idProd" });
-
-// OrdenCot
 const OrdenCot = sequelize.define(
   "ordenCot",
   {
@@ -97,92 +106,127 @@ const OrdenCot = sequelize.define(
   { timestamps: false }
 );
 
-OrdenCot.belongsTo(Producto, { foreignKey: "idProdu" });
-OrdenCot.belongsTo(OT, { foreignKey: "OT" });
-OrdenCot.belongsTo(Cliente, { foreignKey: "idCliente" });
+// --- Modelos de Chat (REFACTORIZADOS) ---
+// Se eliminan MenEmp y MenCoor que son redundantes
 
-// Mensajes
-const MenEmp = sequelize.define(
-  "menEmp",
-  {
-    idMen: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-    contMen: { type: DataTypes.TEXT, allowNull: false },
-    fechaEnv: { type: DataTypes.DATE },
-    fechaRec: { type: DataTypes.DATE },
-  },
-  { timestamps: false }
-);
-
-MenEmp.belongsTo(Empleado, { foreignKey: "idEmp" });
-
-const MenCoor = sequelize.define(
-  "menCoor",
-  {
-    idMen: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-    contMen: { type: DataTypes.TEXT, allowNull: false },
-    fechaEnv: { type: DataTypes.DATE },
-    fechaRec: { type: DataTypes.DATE },
-  },
-  { timestamps: false }
-);
-
-MenCoor.belongsTo(Jefe, { foreignKey: "idCoor" });
-
-// Chat
 const Chat = sequelize.define(
   "chat",
   {
     idChat: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
   },
-  { timestamps: false }
+  { timestamps: true } // Los chats deben tener timestamps
 );
 
-Chat.belongsTo(MenCoor, { foreignKey: "idMenCoor" });
-Chat.belongsTo(MenEmp, { foreignKey: "idMenEmp" });
+const Mensaje = sequelize.define(
+  "mensaje",
+  {
+    idMen: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    contMen: { type: DataTypes.TEXT, allowNull: false },
+  },
+  { timestamps: true } // Los mensajes DEBEN tener timestamps
+);
 
-// Relaciones adicionales
-Empleado.belongsToMany(Producto, {
-  through: "empProductT",
+// --- Definición de Relaciones ---
+
+// 1:N -> Empresa tiene muchos Jefes, Jefe pertenece a 1 Empresa
+Empresa.hasMany(Jefe, { foreignKey: "idEmp" });
+Jefe.belongsTo(Empresa, { foreignKey: "idEmp" });
+
+// 1:N -> Producto tiene muchas OTs, OT pertenece a 1 Producto
+Producto.hasMany(OT, { foreignKey: "idProd" });
+OT.belongsTo(Producto, { foreignKey: "idProd" });
+
+// 1:N -> OrdenCot centraliza relaciones
+OrdenCot.belongsTo(Producto, { foreignKey: "idProd" }); // CORREGIDO: 'idProd'
+OrdenCot.belongsTo(OT, { foreignKey: "idOT" }); // CORREGIDO: 'idOT' (Arregla tu error)
+OrdenCot.belongsTo(Cliente, { foreignKey: "idCliente" });
+
+// --- Relaciones del Chat (CORREGIDAS) ---
+
+// 1:N -> Chat tiene muchos Mensajes
+Chat.hasMany(Mensaje, { foreignKey: "idChat" });
+Mensaje.belongsTo(Chat, { foreignKey: "idChat" });
+
+// 1:N -> Empleado (remitente) ha enviado muchos Mensajes
+Empleado.hasMany(Mensaje, { foreignKey: "idEmpleadoSender" });
+Mensaje.belongsTo(Empleado, {
+  as: "remitenteEmpleado",
+  foreignKey: "idEmpleadoSender",
+});
+
+// 1:N -> Jefe (remitente) ha enviado muchos Mensajes
+Jefe.hasMany(Mensaje, { foreignKey: "idJefeSender" });
+Mensaje.belongsTo(Jefe, {
+  as: "remitenteJefe",
+  foreignKey: "idJefeSender",
+});
+
+// M:N -> Empleado está en muchos Chats
+Empleado.belongsToMany(Chat, {
+  through: "empChat",
   foreignKey: "idEmpleado",
+});
+Chat.belongsToMany(Empleado, { through: "empChat", foreignKey: "idChat" });
+
+// M:N -> Jefe está en muchos Chats
+Jefe.belongsToMany(Chat, { through: "jefeChat", foreignKey: "idJefe" });
+Chat.belongsToMany(Jefe, { through: "jefeChat", foreignKey: "idChat" });
+
+// --- Relaciones Adicionales (Muchos a Muchos) ---
+
+// M:N -> Empleado <-> Producto (Relación 1)
+Empleado.belongsToMany(Producto, {
+  through: "empProductT", // Tabla de unión 1
+  foreignKey: "idEmpleado",
+  as: "productosT", // CORREGIDO: Se necesita un alias
 });
 Producto.belongsToMany(Empleado, {
   through: "empProductT",
   foreignKey: "idProductoT",
+  as: "empleadosT", // CORREGIDO: Se necesita un alias
 });
 
+// M:N -> Empleado <-> Producto (Relación 2)
 Empleado.belongsToMany(Producto, {
-  through: "empProductP",
+  through: "empProductP", // Tabla de unión 2
   foreignKey: "idEmpleado",
+  as: "productosP", // CORREGIDO: Se necesita un alias
 });
 Producto.belongsToMany(Empleado, {
   through: "empProductP",
   foreignKey: "idProductoP",
+  as: "empleadosP", // CORREGIDO: Se necesita un alias
 });
 
-Empleado.belongsToMany(Chat, { through: "empChat", foreignKey: "idEmpleado" });
-Chat.belongsToMany(Empleado, { through: "empChat", foreignKey: "idChat" });
-
+// M:N -> Jefe <-> Empleado
 Jefe.belongsToMany(Empleado, { through: "jefeEmp", foreignKey: "jefe" });
 Empleado.belongsToMany(Jefe, { through: "jefeEmp", foreignKey: "empleado" });
 
-Jefe.belongsToMany(Chat, { through: "jefeChat", foreignKey: "idJefe" });
-Chat.belongsToMany(Jefe, { through: "jefeChat", foreignKey: "idChat" });
-
-Jefe.belongsToMany(Empresa, { through: "empJefe", foreignKey: "jefe" });
-Empresa.belongsToMany(Jefe, { through: "empJefe", foreignKey: "empre" });
-
+// M:N -> OrdenCot <-> OT
 OrdenCot.belongsToMany(OT, { through: "OcOt", foreignKey: "idOc" });
 OT.belongsToMany(OrdenCot, { through: "OcOt", foreignKey: "idOt" });
 
+// M:N -> Producto <-> Cliente
 Producto.belongsToMany(Cliente, {
-  through: "produCliente",
+  through: "produCliente", // CORREGIDO: Tabla de unión propia
   foreignKey: "producto",
 });
 Cliente.belongsToMany(Producto, {
-  through: "produCliente",
+  through: "produCliente", // CORREGIDO: Tabla de unión propia
   foreignKey: "cliente",
 });
-OT.belongsToMany(Cliente, { through: "produCliente", foreignKey: "OT" });
+
+// M:N -> OT <-> Cliente
+OT.belongsToMany(Cliente, {
+  through: "otCliente", // CORREGIDO: DEBE ser una tabla de unión diferente
+  foreignKey: "OT",
+});
+Cliente.belongsToMany(OT, {
+  through: "otCliente", // CORREGIDO: DEBE ser una tabla de unión diferente
+  foreignKey: "cliente",
+});
+
+// --- Exports ---
 
 module.exports = {
   Empresa,
@@ -192,7 +236,6 @@ module.exports = {
   Producto,
   OT,
   OrdenCot,
-  MenEmp,
-  MenCoor,
   Chat,
+  Mensaje, // CORREGIDO: Exporta los nuevos modelos de chat
 };
