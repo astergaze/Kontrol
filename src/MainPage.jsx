@@ -11,7 +11,7 @@ const MainPage = () => {
   return (
     <>
       <Header />
-      <div className="mainPageAdmin">
+      <div className="mainPage">
         <main className="contenedor-general-cards">
           <div className="contenedor-cards">
             
