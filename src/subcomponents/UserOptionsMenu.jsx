@@ -9,7 +9,7 @@ const UserOptionsMenu = () => {
     navigate("/");
   };
   const handleChangePwd = () => {
-    navigate("/");
+    navigate("/ChangePwd");
   };
 
   return (

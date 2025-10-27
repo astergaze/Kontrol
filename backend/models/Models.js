@@ -30,8 +30,12 @@ const Empleado = sequelize.define(
     salario: { type: DataTypes.BIGINT, allowNull: false },
     nombre: { type: DataTypes.STRING(30), allowNull: false },
     apellido: { type: DataTypes.STRING(30), allowNull: false },
+    email:{type: DataTypes.STRING(50), allowNull: false, unique: true, validate: {isEmail: true}},
+    telefono:{type: DataTypes.BIGINT(15), allowNull: false, unique:true, validate:{len: [9,15]}},
+    DNI:{type: DataTypes.BIGINT(15), allowNull: false, unique: true},
+    password: { type: DataTypes.STRING(130), allowNull: false},
   },
-  { timestamps: false }
+  { timestamps: true }
 );
 
 // Cliente

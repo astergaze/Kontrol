@@ -1,23 +1,19 @@
-/* Reset básico */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Fondo y tipografía general */
 .mainPage {
   background-color: #1e1e1e;
-  color: #ffffff;
+  color: white;
   font-family: Arial, sans-serif;
 }
 
-/* Logo */
-.logo {
+.contenedor-general-cards {
   display: flex;
+  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  height: 80dvh;
+  padding: 1rem;
+  width: 100%;
 }
+
 
 .logo h1 {
   font-size: 20px;
@@ -27,80 +23,69 @@
   color: #48a0ff;
 }
 
-/* Usuario */
-.usuario {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
 
 .iconos-superior span {
   font-size: 20px;
   margin-right: 20px;
 }
 
-/* Perfil */
-.perfil {
-  transform: scale(0.9);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #2c2c2c;
-  padding: 5px 5px;
-  border-radius: 20px;
-}
 
-/* Contenido principal */
-main {
+
+.contenedor-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr); 
   gap: 20px;
-  padding: 100px 200px 40px;
-  align-content: center;
+  width: 100%;
 }
 
-/* Tarjetas */
 .card {
   background: linear-gradient(to bottom, #003366, #000000);
-  padding: 20px;
+  padding: 0px 17px 13px;
   border-radius: 20px;
+  color: white;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  color: #ffffff;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.02);
 }
 
 .card h2 {
+  font-size: 16px;
   color: #00aaff;
   margin-bottom: 10px;
-  font-size: 18px;
 }
 
 .card p {
   font-size: 14px;
+  color: #ccc;
   margin-bottom: 20px;
 }
 
-/* Variantes de tamaño */
-.grande {
-  grid-column: span 2;
-}
-
-.pequena {
-  grid-column: span 1;
+.card img {
+  width: 50px;
+  align-self: center;
 }
 
 .icono-user {
   transform: scale(0.4);
 }
 
-.logo {
-  transform: scale(0.6);
-  margin-left: -70px;
-}
-
 .iconos-superior {
   transform: scale(0.5);
   gap: 50px;
   margin-right: -80px;
+}
+
+img.logo3{
+  transform: translateY(37px) scale(2) translateX(315px);
+}
+img.logo4{
+  transform: translateY(33px) scale(1) translateX(730px);
+}
+img.logo5{
+  transform: translateY(39px) scale(1) translateX(315px);
 }

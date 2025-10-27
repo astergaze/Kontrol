@@ -2,12 +2,31 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/signup.css";
 import Header from "./Header";
+
+
+
 const SignUp = () => {
   const navigate = useNavigate();
 
   const Return = () => {
     navigate("/main");
-  };
+  };  
+
+  const SignEmployee = async () => {
+    const name = document.getElementById("nameForm").value;
+    const lastname = document.getElementById("lastnameForm").value;
+    const email = document.getElementById("emailForm").value;
+    const phone = document.getElementById("phonenumberForm").value;
+    const DNI = document.getElementById("DNIForm").value;
+    const response = await axios.post("http://localhost:3001/api/signup", {
+      nombre: name,
+      apellido: lastname,
+      email: email,
+      telefono: phone,
+      DNI: DNI,
+    });
+    console.log(response.data);
+  }
 
   return (
     <>
@@ -62,16 +81,7 @@ const SignUp = () => {
             maxLength={8}
             pattern="[0-9]{8}"
           />
-          <p>Fecha de alta</p>
-          <input
-            type="date"
-            name="SignUp"
-            id="signupForm"
-            placeholder="Ejemplo: dd/mm/aaaa"
-            className="signupInput"
-          />
-
-          <button className="signupBtn">Dar Alta</button>
+          <button className="signupBtn" onClick={SignEmployee}>Dar Alta</button>
         </div>
       </div>
     </>
