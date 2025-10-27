@@ -4,6 +4,7 @@ import Login from "./Login";
 import SignUp from "./SignUp";
 import JobCreation from "./JobCreation";
 import MainPageAdmin from "./MainPageAdmin";
+import MainPage from "./MainPage";
 import MaterialRequest from "./Viewmaterialrequests";
 import Chat from "./Chat";
 import PriceListAdmin from "./PriceListAdmin"
@@ -17,6 +18,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Login />} /> {/* Página inicial */}
       <Route path="/main" element={<MainPageAdmin />} /> {/* Página destino */}
+      <Route path="/mainU" element={<MainPage />} /> {/* Página destino */}
       <Route path="/signup" element={<SignUp />} />{" "}
       {/* Pagina de alta de operadores */}
       <Route path="/jobcreation" element={<JobCreation />} />{" "}
