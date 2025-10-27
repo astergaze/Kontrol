@@ -2,13 +2,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/PriceListAdmin.css";
 import Header from "./Header";
-const SignUp = () => {
+const ModifyPriceList = () => {
   const navigate = useNavigate();
 
   const Return = () => {
     navigate("/main");
   };
-
+ const Modify = () => {
+    navigate("/ModifyPrice");
+  };
   return (
     <>
       <Header />
@@ -52,10 +54,10 @@ const SignUp = () => {
     </div>
     
   </div>
-  <button className="modificar-btn">Modificar</button>
+  <button className="modificar-btn" onClick={Modify}>Modificar</button>
       </div>
     </>
   );
 };
 
-export default SignUp;
+export default ModifyPriceList;

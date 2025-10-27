@@ -11,6 +11,7 @@ import PreViewJob from "./PreViewJob";
 import Quotation from "./Quotation";
 import QuotePDF from "./QuotePDF"
 import PriceListuser from "./PriceListuser"
+import ModifyPriceList from "./ModifyPriceList"
 const App = () => {
   return (
     <Routes>
@@ -33,6 +34,7 @@ const App = () => {
       <Route path="/QuotePDF" element={<QuotePDF />} />{" "}
       {/*Pagina de generacion del pdf */}
       <Route path="/PriceListuser" element={<PriceListuser />} />{" "}
+      <Route path="/ModifyPrice" element={<ModifyPriceList />} />{" "}
     </Routes>
   );
 };

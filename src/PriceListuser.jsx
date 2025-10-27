@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/PriceListuser.css";
 import Header from "./Header";
-const SignUp = () => {
+const PriceList = () => {
     const navigate = useNavigate();
 
     const Return = () => {
@@ -57,4 +57,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default PriceList;

@@ -1,0 +1,185 @@
+/* --- Contenedor General de la Página --- */
+.modify-page-container {
+  background-color: #1e1e1e; /* Fondo oscuro principal */
+  color: #e0e0e0; /* Color de texto claro */
+  margin-top:5rem;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+
+
+
+/* --- Contenedor Principal (Tarjeta) --- */
+.modify-main-container {
+  background-color: #405f7f; /* Fondo de la tarjeta */
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.modify-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #2e485c;
+  padding: 10px;
+  border-radius: 20px;
+  width: 300px;
+  margin: -40px auto 20px auto; /* Sube el título */
+  position: relative;
+  z-index: 2;
+}
+
+/* --- Layout de Contenido (2 columnas) --- */
+.modify-content-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* El panel izquierdo es más grande */
+  gap: 20px;
+}
+
+/* --- Panel Izquierdo (Formularios) --- */
+.left-panel {
+  background-color: #2e485c;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.tab-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background-color: #2e485c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.tab-btn.active {
+  background-color: #09509b; /* Azul activo */
+}
+
+.tab-content h3 {
+  font-size: 18px;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.action-section {
+  margin-bottom: 25px;
+}
+
+.action-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px; /* Nombre, Precio, Botón */
+  gap: 15px;
+  align-items: flex-end;
+}
+
+/* Para la sección "Modificar" que tiene botones abajo */
+.action-section:last-child .action-form {
+  grid-template-columns: 1fr 1fr; /* Nombre, Precio */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #c0c0c0;
+}
+
+.form-group input {
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  color: #1a202c;
+  font-size: 14px;
+}
+
+/* --- Botones --- */
+.btn {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+.btn-add {
+  background-color: #007bff;
+  height: 40px; /* Alinear con inputs */
+}
+
+.modify-buttons {
+  grid-column: 1 / -1; /* Ocupa todo el ancho */
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-accept {
+  background-color: #007bff;
+}
+
+.btn-delete {
+  background-color: #aa0011; /* Rojo */
+}
+
+/* --- Panel Derecho (Lista) --- */
+.right-panel {
+  display: flex;
+  align-items: center; /* Centra la lista verticalmente */
+}
+
+.list-display {
+  background-color: #2e485c;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2e485c;
+}
+
+.price-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.list-item.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.list-item:not(.selected):hover {
+  background-color: #4a5568;
+}
