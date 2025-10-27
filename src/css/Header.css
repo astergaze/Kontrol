@@ -68,6 +68,18 @@ header {
   width: 12rem;
   overflow: hidden;
   margin-top: 8px;
+  animation-name: bajada;
+  animation-duration: 100ms;
+  animation-timing-function: linear;
+}
+
+@keyframes bajada{
+  from {
+    transform: translateY(-75px);
+  }
+  to {
+    transform: translateY(0px);
+  }
 }
 
 .menu div {
@@ -97,6 +109,9 @@ header {
   margin-top: 8px;
   overflow-y: auto;
   max-height: 12rem;
+  animation-name: bajada;
+  animation-duration: 100ms;
+  animation-timing-function: linear;
 }
 /*Futura integracion al darle click*/
 .notifMenu > div {
@@ -105,7 +120,7 @@ header {
   cursor: pointer; 
 }
 .notifMenu > div:hover {
-  background-color: #3e5d75; 
+  background-color: #3e5d75;
 }
 .notifMenu p {
   font-size: 1.5rem;
