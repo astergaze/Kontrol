@@ -11,6 +11,7 @@ import PreViewJob from "./PreViewJob";
 import Quotation from "./Quotation";
 import QuotePDF from "./QuotePDF"
 import PriceListuser from "./PriceListuser"
+import ChangePassword from "./ChangePwd";
 const App = () => {
   return (
     <Routes>
@@ -33,6 +34,8 @@ const App = () => {
       <Route path="/QuotePDF" element={<QuotePDF />} />{" "}
       {/*Pagina de generacion del pdf */}
       <Route path="/PriceListuser" element={<PriceListuser />} />{" "}
+      {/*Pagina de cambio de contraseña */}
+      <Route path="/ChangePwd" element={<ChangePassword />} />{" "}
     </Routes>
   );
 };
