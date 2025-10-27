@@ -21,6 +21,35 @@ const SignUp = async (req, res) => {
     }
 }
 
+const Login = async (req, res) => {
+    try {
+        const { DNI, password } = req.body;
+        const empleadoEncontrado = await Empleado.findOne({ 
+            where: { DNI: DNI } 
+        });
+        if (!empleadoEncontrado) {
+            return res.status(404).json({ message: "DNI o contraseña incorrectos" });
+        }
+        const isMatch = await bcrypt.compare(password, empleadoEncontrado.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "DNI o contraseña incorrectos" });
+        }
+        //Usar JWT despues
+        res.json({ 
+            message: "Inicio de sesion exitoso",
+            empleado: {
+                idEmpleado: empleadoEncontrado.idEmpleado,
+                nombre: empleadoEncontrado.nombre,
+                email: empleadoEncontrado.email
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: "Error interno del servidor", error: error.message });
+    }
+};
+
 module.exports = {
     SignUp,
+    Login
 };
