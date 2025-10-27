@@ -6,7 +6,7 @@ const SignUp = () => {
     const navigate = useNavigate();
 
     const Return = () => {
-        navigate("/PriceListuser");
+        navigate("/mainU");
     };
 
     return (

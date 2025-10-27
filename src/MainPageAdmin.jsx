@@ -16,13 +16,13 @@ const MainPageAdmin = () => {
   const handleMaterialRequest = () => {
     navigate("/materialrequest");
   };
-   const handlePriceListAdmin = () => {
+  const handlePriceListAdmin = () => {
     navigate("/PriceListAdmin");
   };
-  const handleQuotation = () =>{
+  const handleQuotation = () => {
     navigate("/Quotation")
   }
-  const handlePreViewJob = () =>{
+  const handlePreViewJob = () => {
     navigate("/PreViewJob")
   }
 
@@ -36,7 +36,7 @@ const MainPageAdmin = () => {
               <h2>
                 <span className="entrada">
                   Entrada del trabajo.
-                   {" "}
+                  {" "}
                   <img
                     className="logo1"
                     src="https://i.imgur.com/CTGB4c8.png"
@@ -51,7 +51,7 @@ const MainPageAdmin = () => {
               <h2>
                 <span className="lista">
                   Lista de precios.
-                   {" "}
+                  {" "}
                   <img
                     className="logo4"
                     src="https://i.imgur.com/tqKQT8j.png"
@@ -81,7 +81,7 @@ const MainPageAdmin = () => {
               <h2>
                 <span className="vista">
                   Vista de trabajos.
-                   {" "}
+                  {" "}
                   <img
                     className="logo5"
                     src="https://i.imgur.com/Ftc3seh.png"
@@ -103,7 +103,7 @@ const MainPageAdmin = () => {
               <h2>
                 <span className="solicitud">
                   Ver solicitudes de materiales.
-                   {" "}
+                  {" "}
                   <img
                     className="logo3"
                     src="https://i.imgur.com/DcYlKKD.png"
@@ -121,7 +121,7 @@ const MainPageAdmin = () => {
               <h2>
                 <span className="azul">
                   Alta de Operadores.
-                       {" "}
+                  {" "}
                   <img
                     className="logo6"
                     src="https://i.imgur.com/fjRwV7z.png"
