@@ -1,0 +1,57 @@
+.generalContent {
+  padding: 2%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ProfileContainer {
+  background-color: #213346;
+  width: 60%;
+  max-width: 900px;
+  height: 30rem;
+  border-radius: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* imagen 1 parte, datos 2 partes */
+  align-items: center;
+  padding: 2rem 3rem;
+  gap: 2rem;
+  color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.profileLogo {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+  justify-self: center; /* centra la imagen en su columna */
+}
+
+.profileData {
+  background-color: #151f2b;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.modify {
+  background-color: #0070c5;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+  align-self: flex-start;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modify:hover {
+  background-color: #005fa3;
+}

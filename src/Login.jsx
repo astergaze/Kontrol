@@ -6,16 +6,16 @@ import "./css/login.css";
 const Login = () => {
   const navigate = useNavigate();
   const handleLogin = async () => {
-    const DNI = document.getElementById("DNIForm").value
-    const password = document.getElementById("passwordForm").value
-    const res = await axios.post("http://localhost:3001/api/login", {
-      DNI,
-      password
-    })
-    console.log(res.data.message);
-    if(res.data.message === "Inicio de sesion exitoso") {
+    // const DNI = document.getElementById("DNIForm").value
+    // const password = document.getElementById("passwordForm").value
+    // const res = await axios.post("http://localhost:3001/api/login", {
+    //   DNI,
+    //   password
+    // })
+    // console.log(res.data.message);
+    // if(res.data.message === "Inicio de sesion exitoso") {
       navigate("/main");
-    }
+    // }
   };
 
   return (

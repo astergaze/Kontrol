@@ -12,6 +12,7 @@ import PreViewJob from "./PreViewJob";
 import Quotation from "./Quotation";
 import QuotePDF from "./QuotePDF"
 import PriceListuser from "./PriceListuser"
+import Profile from "./Profile"
 
 import ModifyPriceList from "./ModifyPriceList"
 
@@ -43,7 +44,8 @@ const App = () => {
       <Route path="/ModifyPrice" element={<ModifyPriceList />} />{" "}
       {/*Pagina de cambio de contraseña */}
       <Route path="/ChangePwd" element={<ChangePassword />} />{" "}
-
+      {/*Pagina del perfil de usuario (/me) */}
+      <Route path="/Profile" element={<Profile />} />{" "}
     </Routes>
   );
 };
