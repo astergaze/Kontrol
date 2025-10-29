@@ -1,57 +1,121 @@
 .generalContent {
-  padding: 2%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    padding: 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .ProfileContainer {
-  background-color: #213346;
-  width: 60%;
-  max-width: 900px;
-  height: 30rem;
-  border-radius: 2rem;
-  display: grid;
-  grid-template-columns: 1fr 2fr; /* imagen 1 parte, datos 2 partes */
-  align-items: center;
-  padding: 2rem 3rem;
-  gap: 2rem;
-  color: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    background-color: #213346;
+    width: 60%;
+    max-width: 900px;
+    height: 30rem;
+    border-radius: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    align-items: center;
+    padding: 2rem 3rem;
+    gap: 2rem;
+    color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
 .profileLogo {
-  width: 10rem;
-  height: 10rem;
-  border-radius: 50%;
-  object-fit: cover;
-  justify-self: center; /* centra la imagen en su columna */
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    object-fit: cover;
+    justify-self: center;
 }
 
 .profileData {
-  background-color: #151f2b;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  font-size: 1.1rem;
-  line-height: 1.4;
+    background-color: #151f2b;
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
 }
 
 .modify {
-  background-color: #0070c5;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  margin-top: 1rem;
-  align-self: flex-start;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    background-color: #0070c5;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    margin-top: 1rem;
+    align-self: flex-start;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .modify:hover {
-  background-color: #005fa3;
+    background-color: #005fa3;
+}
+
+.editInput {
+    background-color: #213346; 
+    color: white;
+    border: 1px solid #0070c5;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.3rem;
+    margin-left: 10px; 
+    font-size: 1rem;
+    width: 60%; 
+}
+
+.profileData > button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save {
+    background-color: #0070c5;
+    color: white;
+}
+
+.save:hover {
+    background-color: #0265b1;
+}
+
+.cancel {
+    background-color: #dc3545; 
+    color: white;
+    margin-left: 10px; 
+}
+
+.cancel:hover {
+    background-color: #c82333;
+}
+
+.errorText {
+    color: #ff5555; 
+    font-size: 0.9rem;
+    margin-top: 5px;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.has-error .editInput {
+    border: 1px solid #ff5555; 
+}
+
+
+.data-row {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: center;
+}
+
+.data-row .errorText {
+    flex-basis: 100%;
+    margin-left: 0;
 }
