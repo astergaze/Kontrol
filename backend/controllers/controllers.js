@@ -85,10 +85,25 @@ const modifyUser = async (req, res) => {
     empleadoEncontrado.email = email;
   }
   if (phone) {
-    empleadoEncontrado.phone = phone;
+    empleadoEncontrado.telefono = phone;
   }
+  const dataLoad= {
+        id: empleadoEncontrado.id,
+        DNI: empleadoEncontrado.DNI,
+        isAdmin: empleadoEncontrado.isAdmin,
+        email: empleadoEncontrado.email,
+        nombre: empleadoEncontrado.nombre,
+        apellido: empleadoEncontrado.apellido,
+        telefono: empleadoEncontrado.telefono
+    }
+    const token = jwt.sign(
+        dataLoad,
+        SECRET, {
+            expiresIn: "30d"
+        }
+    )
   await empleadoEncontrado.save();
-  res.json({ message: "Datos actualizados correctamente" });
+  res.json({ message: "Datos actualizados correctamente", token: token });
 };
 module.exports = {
   SignUp,
