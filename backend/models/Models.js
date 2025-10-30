@@ -26,7 +26,7 @@ const Empleado = sequelize.define(
   "empleado",
   {
     idEmpleado: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true }, 
-    salario: { type: DataTypes.BIGINT, allowNull: false },
+    isAdmin: { type: DataTypes.BOOLEAN, allowNull: false },
     nombre: { type: DataTypes.STRING(30), allowNull: false },
     apellido: { type: DataTypes.STRING(30), allowNull: false },
     email: {

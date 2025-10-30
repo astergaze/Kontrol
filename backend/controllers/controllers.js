@@ -10,6 +10,8 @@ const {
   Chat,
 } = require("../models/Models");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken")
+const SECRET = "El Psy Kongroo" //Luego mover a un .env
 const SignUp = async (req, res) => {
   try {
     const { nombre, apellido, email, telefono, DNI } = req.body;
@@ -23,9 +25,9 @@ const SignUp = async (req, res) => {
       telefono,
       DNI,
       password: hashedPassword,
-      salario: 0,
+      isAdmin: false,
     });
-    res.json({ message: "Empleado creado", empleado: newEmpleado });
+    res.json({ message: "Empleado creado", token: newEmpleado });
   } catch (error) {
     res
       .status(500)
@@ -46,14 +48,24 @@ const Login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "DNI o contraseña incorrectos" });
     }
-    //Usar JWT despues
-    res.json({
-      message: "Inicio de sesion exitoso",
-      empleado: {
-        idEmpleado: empleadoEncontrado.idEmpleado,
-        nombre: empleadoEncontrado.nombre,
+    const dataLoad= {
+        id: empleadoEncontrado.id,
+        DNI: empleadoEncontrado.DNI,
+        isAdmin: empleadoEncontrado.isAdmin,
         email: empleadoEncontrado.email,
-      },
+        nombre: empleadoEncontrado.nombre,
+        apellido: empleadoEncontrado.apellido,
+        telefono: empleadoEncontrado.telefono
+    }
+    const token = jwt.sign(
+        dataLoad,
+        SECRET, {
+            expiresIn: "30d"
+        }
+    )
+    res.status(201).json({
+      message: "Inicio de sesion exitoso",
+      token: token,
     });
   } catch (error) {
     res

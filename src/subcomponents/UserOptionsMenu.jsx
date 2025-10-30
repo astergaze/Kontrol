@@ -7,6 +7,7 @@ const UserOptionsMenu = () => {
 
   const navigate = useNavigate();
   const handleLogOut = () => {
+    localStorage.removeItem("token")
     navigate("/");
   };
   const handleChangePwd = () => {
