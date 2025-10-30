@@ -1,69 +1,111 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./css/changePwd.css";
 import Header from "./Header";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [oldPwd, setOldPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserData(decoded);
+      } catch (e) {
+        console.log("Invalido o expiro");
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const Return = () => {
-    navigate("/main");
+    const payload = jwtDecode(token);
+    if (payload.isAdmin) {
+      navigate("/main");
+    } else {
+      navigate("/mainU");
+    }
   };
-  const handleChangePwd = ()=>{
-    navigate("/main")
-  }
+
+  const handleChangePwd = async (event) => {
+    event.preventDefault();
+    setError(null);
+
+    if (!userData || !oldPwd || !newPwd) {
+      setError("Por favor, complete todos los campos.");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:3001/api/changePwd", {
+        oldPwd: oldPwd,
+        newPwd: newPwd,
+        DNI: userData.DNI,
+      });
+
+      if (res.data.message === "Contraseña actualizada") {
+        alert("Actualizacion completa");
+        const payload = jwtDecode(token);
+        if (payload.isAdmin) {
+          navigate("/main");
+        } else {
+          navigate("/mainU");
+        }
+      }
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Error al cambiar la contraseña.";
+      console.error(errorMsg);
+      setError(errorMsg);
+    }
+  };
 
   return (
     <>
       <Header />
-      <div className="ChangePwdMC"> 
+      <div className="ChangePwdMC">
         <button className="return" onClick={Return}>
           Volver
         </button>
-        
-        <div className="changePwdForm"> 
-          <h2>Cambio de contraseña</h2> 
-
-          <p>DNI</p>
-          <input
-            type="text"
-            name="DNI"
-            id="DNIForm"
-            placeholder="Ej: 012345678"
-            className="changePwdInput"
-            maxLength={8}
-            pattern="[0-9]{8}"
-          />
+        <form className="changePwdForm" onSubmit={handleChangePwd}>
+          <h2>Cambio de contraseña</h2>
 
           <p>Contraseña actual</p>
           <input
             type="password"
             name="CurrentPassword"
-            id="currentPasswordForm"
+            value={oldPwd}
+            onChange={(e) => setOldPwd(e.target.value)}
             placeholder="************"
             className="changePwdInput"
+            required
           />
 
           <p>Nueva Contraseña</p>
           <input
             type="password"
             name="NewPassword"
-            id="newPasswordForm"
+            value={newPwd}
+            onChange={(e) => setNewPwd(e.target.value)}
             placeholder="************"
             className="changePwdInput"
+            required
           />
+          {error && <p className="errorText">{error}</p>}
 
-          <p>Confirme Contraseña</p>
-          <input
-            type="password"
-            name="ConfirmPassword"
-            id="confirmPasswordForm"
-            placeholder="************"
-            className="changePwdInput"
-          />
-
-          <button className="changePwdBtn" onClick={handleChangePwd}>Cambiar contraseña</button>
-        </div>
+          <button className="changePwdBtn" type="submit">
+            Cambiar contraseña
+          </button>
+        </form>
       </div>
     </>
   );

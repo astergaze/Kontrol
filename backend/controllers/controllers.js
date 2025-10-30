@@ -10,8 +10,8 @@ const {
   Chat,
 } = require("../models/Models");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
-const SECRET = "El Psy Kongroo" //Luego mover a un .env
+const jwt = require("jsonwebtoken");
+const SECRET = "El Psy Kongroo"; //Luego mover a un .env
 const SignUp = async (req, res) => {
   try {
     const { nombre, apellido, email, telefono, DNI } = req.body;
@@ -48,21 +48,18 @@ const Login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: "DNI o contraseña incorrectos" });
     }
-    const dataLoad= {
-        id: empleadoEncontrado.id,
-        DNI: empleadoEncontrado.DNI,
-        isAdmin: empleadoEncontrado.isAdmin,
-        email: empleadoEncontrado.email,
-        nombre: empleadoEncontrado.nombre,
-        apellido: empleadoEncontrado.apellido,
-        telefono: empleadoEncontrado.telefono
-    }
-    const token = jwt.sign(
-        dataLoad,
-        SECRET, {
-            expiresIn: "30d"
-        }
-    )
+    const dataLoad = {
+      id: empleadoEncontrado.id,
+      DNI: empleadoEncontrado.DNI,
+      isAdmin: empleadoEncontrado.isAdmin,
+      email: empleadoEncontrado.email,
+      nombre: empleadoEncontrado.nombre,
+      apellido: empleadoEncontrado.apellido,
+      telefono: empleadoEncontrado.telefono,
+    };
+    const token = jwt.sign(dataLoad, SECRET, {
+      expiresIn: "30d",
+    });
     res.status(201).json({
       message: "Inicio de sesion exitoso",
       token: token,
@@ -87,26 +84,41 @@ const modifyUser = async (req, res) => {
   if (phone) {
     empleadoEncontrado.telefono = phone;
   }
-  const dataLoad= {
-        id: empleadoEncontrado.id,
-        DNI: empleadoEncontrado.DNI,
-        isAdmin: empleadoEncontrado.isAdmin,
-        email: empleadoEncontrado.email,
-        nombre: empleadoEncontrado.nombre,
-        apellido: empleadoEncontrado.apellido,
-        telefono: empleadoEncontrado.telefono
-    }
-    const token = jwt.sign(
-        dataLoad,
-        SECRET, {
-            expiresIn: "30d"
-        }
-    )
+  const dataLoad = {
+    id: empleadoEncontrado.id,
+    DNI: empleadoEncontrado.DNI,
+    isAdmin: empleadoEncontrado.isAdmin,
+    email: empleadoEncontrado.email,
+    nombre: empleadoEncontrado.nombre,
+    apellido: empleadoEncontrado.apellido,
+    telefono: empleadoEncontrado.telefono,
+  };
+  const token = jwt.sign(dataLoad, SECRET, {
+    expiresIn: "30d",
+  });
   await empleadoEncontrado.save();
   res.json({ message: "Datos actualizados correctamente", token: token });
+};
+const changePwd = async (req, res) => {
+  const {oldPwd, newPwd, DNI} = req.body;
+  const empleadoEncontrado = await Empleado.findOne({
+    where: { DNI: DNI },
+  });
+  if (!empleadoEncontrado) {
+    return res.status(404).json({ message: "DNI o contraseña incorrectos" });
+  }
+  const isMatch = await bcrypt.compare(oldPwd, empleadoEncontrado.password);
+  if (!isMatch) {
+    return res.status(401).json({ message: "DNI o contraseña incorrectos" });
+  }
+  const hashedPassword = await bcrypt.hash(newPwd, 10);
+  empleadoEncontrado.password = hashedPassword;
+  await empleadoEncontrado.save()
+  res.status(201).json({message: "Cambio realizado"})
 };
 module.exports = {
   SignUp,
   Login,
   modifyUser,
+  changePwd
 };
