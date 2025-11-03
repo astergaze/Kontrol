@@ -1,13 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import "./css/chat.css";
 import Header from "./Header";
+import { jwtDecode } from "jwt-decode"; 
+
 const Chat = () => {
   const navigate = useNavigate();
-
+  const [userData, setUserData] = useState(null); 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserData(decoded);
+      } catch (e) {
+        console.log("Token inválido o expiró");
+        localStorage.removeItem("token");
+        navigate("/");
+      }
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
   const Return = () => {
-    navigate("/main");
+    if (userData && userData.role === "jefe") {
+      navigate("/main");
+    } else {
+      navigate("/mainU");
+    }
   };
+  if (!userData) {
+    return null; 
+  }
 
   return (
     <>

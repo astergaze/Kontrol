@@ -11,6 +11,7 @@ const ChangePassword = () => {
   const [oldPwd, setOldPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [error, setError] = useState(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -28,8 +29,7 @@ const ChangePassword = () => {
   }, [navigate]);
 
   const Return = () => {
-    const payload = jwtDecode(token);
-    if (payload.isAdmin) {
+    if (userData && userData.role === "jefe") {
       navigate("/main");
     } else {
       navigate("/mainU");
@@ -51,11 +51,10 @@ const ChangePassword = () => {
         newPwd: newPwd,
         DNI: userData.DNI,
       });
-
-      if (res.data.message === "Contraseña actualizada") {
-        alert("Actualizacion completa");
-        const payload = jwtDecode(token);
-        if (payload.isAdmin) {
+      if (res.data.message === "Contraseña cambiada correctamente") {
+        alert("Actualización completa");
+        
+        if (userData.role === "jefe") {
           navigate("/main");
         } else {
           navigate("/mainU");

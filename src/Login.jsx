@@ -14,7 +14,7 @@ const Login = () => {
       const token = localStorage.getItem("token");
       if (token) {
         const payload = jwtDecode(token);
-        if (payload.isAdmin) {
+        if (payload.role == "jefe") {
           navigate("/main");
         } else {
           navigate("/mainU");

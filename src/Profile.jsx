@@ -42,7 +42,11 @@ const Profile = () => {
   }, [userData]);
 
   const Return = () => {
-    navigate("/mainU");
+    if(userData.role == "jefe"){
+      navigate("/main")
+    }else {
+      navigate("/mainU");
+    }
   };
 
   const handleModify = () => {
