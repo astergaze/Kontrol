@@ -1,32 +1,20 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-// --- Modelos Base ---
-
-const Empresa = sequelize.define(
-  "empresa",
+// --- Modelo Unificado de Usuario ---
+const Usuario = sequelize.define(
+  "Usuario",
   {
-    idEmp: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    logo: { type: DataTypes.TEXT, allowNull: false },
-  },
-  { timestamps: false }
-);
-
-const Jefe = sequelize.define(
-  "jefe",
-  {
-    idJefe: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    nombre: { type: DataTypes.STRING(30), allowNull: false },
-    apellido: { type: DataTypes.STRING(30), allowNull: false },
-  },
-  { timestamps: false }
-);
-
-const Empleado = sequelize.define(
-  "empleado",
-  {
-    idEmpleado: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true }, 
-    isAdmin: { type: DataTypes.BOOLEAN, allowNull: false },
+    idUsuario: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    role: {
+      type: DataTypes.ENUM("admin", "jefe", "empleado"),
+      allowNull: false,
+      defaultValue: "empleado",
+    },
     nombre: { type: DataTypes.STRING(30), allowNull: false },
     apellido: { type: DataTypes.STRING(30), allowNull: false },
     email: {
@@ -36,10 +24,9 @@ const Empleado = sequelize.define(
       validate: { isEmail: true },
     },
     telefono: {
-      type: DataTypes.STRING(20), 
+      type: DataTypes.STRING(20),
       allowNull: false,
       unique: true,
-      validate: { len: [9, 20] }, 
     },
     DNI: {
       type: DataTypes.STRING(15),
@@ -47,15 +34,19 @@ const Empleado = sequelize.define(
       unique: true,
     },
     password: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
   },
-  { timestamps: true }
+  {
+    tableName: "usuarios",
+    timestamps: true,
+  }
 );
 
+// --- Modelo de Cliente ---
 const Cliente = sequelize.define(
-  "cliente",
+  "Cliente",
   {
     idCliente: {
       type: DataTypes.BIGINT,
@@ -63,178 +54,260 @@ const Cliente = sequelize.define(
       autoIncrement: true,
     },
     nomClien: { type: DataTypes.STRING(60), allowNull: false },
-    contacto: { type: DataTypes.STRING(20), allowNull: false },
+    responsable: { type: DataTypes.STRING(60), allowNull: true },
+    contacto: { type: DataTypes.STRING(50), allowNull: false },
     direccion: { type: DataTypes.TEXT, allowNull: false },
   },
-  { timestamps: false }
-);
-
-const Producto = sequelize.define(
-  "productos",
   {
-    idProd: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-    nomProduc: { type: DataTypes.STRING(30), allowNull: false },
-    categoria: { type: DataTypes.STRING(30), allowNull: false },
-  },
-  { timestamps: false }
+    tableName: "clientes",
+    timestamps: false,
+  }
 );
 
-const OT = sequelize.define(
-  "OT",
+// --- Modelos de Listas de Precios ---
+const TipoPapel = sequelize.define(
+  "TipoPapel",
+  {
+    idPapel: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    nombre: { type: DataTypes.STRING(50), allowNull: false, unique: true },
+    precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  },
+  { tableName: "tipos_papel", timestamps: false }
+);
+
+const TipoTerminacion = sequelize.define(
+  "TipoTerminacion",
+  {
+    idTerminacion: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: { type: DataTypes.STRING(50), allowNull: false, unique: true },
+    precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  },
+  { tableName: "tipos_terminacion", timestamps: false }
+);
+
+const TipoPersonalizacion = sequelize.define(
+  "TipoPersonalizacion",
+  {
+    idPersonalizacion: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: { type: DataTypes.STRING(50), allowNull: false, unique: true },
+  },
+  { tableName: "tipos_personalizacion", timestamps: false }
+);
+
+// --- Modelos de Órdenes ---
+const OrdenTrabajo = sequelize.define(
+  "OrdenTrabajo",
   {
     idOT: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-    altura: { type: DataTypes.DECIMAL, allowNull: false },
-    longitud: { type: DataTypes.DECIMAL, allowNull: false },
-    fechaIn: { type: DataTypes.DATEONLY }, // DATEONLY pero si no se necesita la hora, en otro caso, usar otro
+    fechaIn: { type: DataTypes.DATEONLY },
     fechaFin: { type: DataTypes.DATEONLY },
-    colores: { type: DataTypes.STRING(10), allowNull: false },
-    prioridad: { type: DataTypes.INTEGER, allowNull: false },
-    original: { type: DataTypes.INTEGER },
-    copia: { type: DataTypes.INTEGER },
-    descripcion: { type: DataTypes.TEXT, allowNull: false },
-    precio: { type: DataTypes.DECIMAL, allowNull: false },
-    acabado: { type: DataTypes.STRING(20), allowNull: false },
+    archivo: { type: DataTypes.STRING(20) },
+    prioridad: { type: DataTypes.ENUM("A", "M", "B") },
+    envio: { type: DataTypes.ENUM("Retira", "Envia") },
+    documento: { type: DataTypes.ENUM("Rem", "Fact") },
+    observaciones: { type: DataTypes.TEXT },
+    
+    // --- CAMPO AGREGADO ---
+    estado: {
+      type: DataTypes.STRING(30), // Opcionalmente: DataTypes.ENUM("Pendiente", "En Proceso", "Completada")
+      allowNull: false,
+      defaultValue: "Pendiente",
+    },
   },
-  { timestamps: false }
+  {
+    tableName: "ordenes_trabajo",
+    timestamps: true,
+  }
 );
 
-const OrdenCot = sequelize.define(
-  "ordenCot",
+const DetalleOrden = sequelize.define(
+  "DetalleOrden",
+  {
+    idDetalle: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    item: { type: DataTypes.INTEGER },
+    descripcion: { type: DataTypes.TEXT },
+    originales: { type: DataTypes.INTEGER },
+    copias: { type: DataTypes.INTEGER },
+    formato: { type: DataTypes.STRING(30) },
+    colores: { type: DataTypes.STRING(30) },
+
+    // --- Claves Foráneas (FK) de Listas de Precios ---
+    idPapel: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: TipoPapel,
+        key: "idPapel",
+      },
+    },
+    idTerminacion: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: TipoTerminacion,
+        key: "idTerminacion",
+      },
+    },
+    idPersonalizacion: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: TipoPersonalizacion,
+        key: "idPersonalizacion",
+      },
+    },
+  },
+  {
+    tableName: "detalles_orden",
+    timestamps: false,
+  }
+);
+
+const OrdenCotizacion = sequelize.define(
+  "OrdenCotizacion",
   {
     idOc: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    precioImpresion: { type: DataTypes.DECIMAL(10, 2) },
+    precioPersonalizacion: { type: DataTypes.DECIMAL(10, 2) },
+    precioTerminacion: { type: DataTypes.DECIMAL(10, 2) },
+    impuestos: { type: DataTypes.DECIMAL(10, 2) },
+    total: { type: DataTypes.DECIMAL(10, 2) },
   },
-  { timestamps: false }
+  {
+    tableName: "ordenes_cotizacion",
+    timestamps: true,
+  }
 );
 
-// --- Modelos de Chat (REFACTORIZADOS) ---
+// --- Modelo de Solicitudes de Material ---
+const SolicitudMaterial = sequelize.define(
+  "SolicitudMaterial",
+  {
+    idSolicitud: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    material: { type: DataTypes.STRING(255), allowNull: false },
+    estado: {
+      type: DataTypes.ENUM("Pendiente", "Aprobada", "Rechazada"),
+      defaultValue: "Pendiente",
+    },
+  },
+  {
+    tableName: "solicitudes_material",
+    timestamps: true,
+  }
+);
 
+// --- Modelos de Chat ---
 const Chat = sequelize.define(
-  "chat",
+  "Chat",
   {
     idChat: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
   },
-  { timestamps: true }
+  {
+    tableName: "chats",
+    timestamps: true,
+  }
 );
 
 const Mensaje = sequelize.define(
-  "mensaje",
+  "Mensaje",
   {
     idMen: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     contMen: { type: DataTypes.TEXT, allowNull: false },
   },
-  { timestamps: true }
+  {
+    tableName: "mensajes",
+    timestamps: true,
+  }
 );
 
-// --- Definición de Relaciones ---
+// =================================================================
+// --- DEFINICIÓN DE RELACIONES ---
+// =================================================================
 
-// 1:N -> Empresa tiene muchos Jefes, Jefe pertenece a 1 Empresa
-Empresa.hasMany(Jefe, { foreignKey: "idEmp" });
-Jefe.belongsTo(Empresa, { foreignKey: "idEmp" });
+// --- Relaciones de Órdenes, Clientes y Cotizaciones ---
+Cliente.hasMany(OrdenTrabajo, { foreignKey: "idCliente" });
+OrdenTrabajo.belongsTo(Cliente, { foreignKey: "idCliente" });
 
-// 1:N -> Producto tiene muchas OTs, OT pertenece a 1 Producto
-Producto.hasMany(OT, { foreignKey: "idProd" });
-OT.belongsTo(Producto, { foreignKey: "idProd" });
+Cliente.hasMany(OrdenCotizacion, { foreignKey: "idCliente" });
+OrdenCotizacion.belongsTo(Cliente, { foreignKey: "idCliente" });
 
-// 1:N -> OrdenCot centraliza relaciones
-OrdenCot.belongsTo(Producto, { foreignKey: "idProd" });
-OrdenCot.belongsTo(OT, { foreignKey: "idOT" }); 
-OrdenCot.belongsTo(Cliente, { foreignKey: "idCliente" });
+OrdenTrabajo.hasMany(DetalleOrden, { foreignKey: "idOT" });
+DetalleOrden.belongsTo(OrdenTrabajo, { foreignKey: "idOT" });
 
-// --- Relaciones del Chat ---
+OrdenCotizacion.belongsToMany(OrdenTrabajo, {
+  through: "cotizacion_ots",
+  foreignKey: "idOc",
+});
+OrdenTrabajo.belongsToMany(OrdenCotizacion, {
+  through: "cotizacion_ots",
+  foreignKey: "idOT",
+});
 
-// 1:N -> Chat tiene muchos Mensajes
+// --- Relaciones de Listas de Precios (con Detalles de Orden) ---
+TipoPapel.hasMany(DetalleOrden, { foreignKey: "idPapel" });
+DetalleOrden.belongsTo(TipoPapel, { foreignKey: "idPapel" });
+
+TipoTerminacion.hasMany(DetalleOrden, { foreignKey: "idTerminacion" });
+DetalleOrden.belongsTo(TipoTerminacion, { foreignKey: "idTerminacion" });
+
+TipoPersonalizacion.hasMany(DetalleOrden, { foreignKey: "idPersonalizacion" });
+DetalleOrden.belongsTo(TipoPersonalizacion, {
+  foreignKey: "idPersonalizacion",
+});
+
+// --- Relaciones de Solicitud de Material ---
+OrdenTrabajo.hasMany(SolicitudMaterial, { foreignKey: "idOT" });
+SolicitudMaterial.belongsTo(OrdenTrabajo, { foreignKey: "idOT" });
+
+Usuario.hasMany(SolicitudMaterial, { foreignKey: "idUsuario" });
+SolicitudMaterial.belongsTo(Usuario, { foreignKey: "idUsuario" });
+
+// --- Relaciones de Chat ---
 Chat.hasMany(Mensaje, { foreignKey: "idChat" });
 Mensaje.belongsTo(Chat, { foreignKey: "idChat" });
 
-// 1:N -> Empleado (remitente) ha enviado muchos Mensajes
-Empleado.hasMany(Mensaje, { foreignKey: "idEmpleadoSender" });
-Mensaje.belongsTo(Empleado, {
-  as: "remitenteEmpleado",
-  foreignKey: "idEmpleadoSender",
+Usuario.hasMany(Mensaje, { foreignKey: "idUsuarioSender" });
+Mensaje.belongsTo(Usuario, {
+  as: "remitente",
+  foreignKey: "idUsuarioSender",
 });
 
-// 1:N -> Jefe (remitente) ha enviado muchos Mensajes
-Jefe.hasMany(Mensaje, { foreignKey: "idJefeSender" });
-Mensaje.belongsTo(Jefe, {
-  as: "remitenteJefe",
-  foreignKey: "idJefeSender",
+Usuario.belongsToMany(Chat, {
+  through: "usuario_chat",
+  foreignKey: "idUsuario",
 });
-
-// M:N -> Empleado está en muchos Chats
-Empleado.belongsToMany(Chat, {
-  through: "empChat",
-  foreignKey: "idEmpleado",
-});
-Chat.belongsToMany(Empleado, { through: "empChat", foreignKey: "idChat" });
-
-// M:N -> Jefe está en muchos Chats
-Jefe.belongsToMany(Chat, { through: "jefeChat", foreignKey: "idJefe" });
-Chat.belongsToMany(Jefe, { through: "jefeChat", foreignKey: "idChat" });
-
-// --- Relaciones Adicionales (Muchos a Muchos) ---
-
-// M:N -> Empleado <-> Producto (Relación 1)
-Empleado.belongsToMany(Producto, {
-  through: "empProductT", 
-  foreignKey: "idEmpleado",
-  as: "productosT", 
-});
-Producto.belongsToMany(Empleado, {
-  through: "empProductT",
-  foreignKey: "idProductoT",
-  as: "empleadosT",
-});
-
-// M:N -> Empleado <-> Producto (Relación 2)
-Empleado.belongsToMany(Producto, {
-  through: "empProductP",
-  foreignKey: "idEmpleado",
-  as: "productosP", 
-});
-Producto.belongsToMany(Empleado, {
-  through: "empProductP",
-  foreignKey: "idProductoP",
-  as: "empleadosP", 
-});
-
-// M:N -> Jefe <-> Empleado
-Jefe.belongsToMany(Empleado, { through: "jefeEmp", foreignKey: "jefe" });
-Empleado.belongsToMany(Jefe, { through: "jefeEmp", foreignKey: "empleado" });
-
-// M:N -> OrdenCot <-> OT
-OrdenCot.belongsToMany(OT, { through: "OcOt", foreignKey: "idOc" });
-OT.belongsToMany(OrdenCot, { through: "OcOt", foreignKey: "idOt" });
-
-// M:N -> Producto <-> Cliente
-Producto.belongsToMany(Cliente, {
-  through: "produCliente",
-  foreignKey: "producto",
-});
-Cliente.belongsToMany(Producto, {
-  through: "produCliente", 
-  foreignKey: "cliente",
-});
-
-// M:N -> OT <-> Cliente
-OT.belongsToMany(Cliente, {
-  through: "otCliente", 
-  foreignKey: "OT",
-});
-Cliente.belongsToMany(OT, {
-  through: "otCliente", 
-  foreignKey: "cliente",
+Chat.belongsToMany(Usuario, {
+  through: "usuario_chat",
+  foreignKey: "idChat",
 });
 
 // --- Exports ---
-
 module.exports = {
-  Empresa,
-  Jefe,
-  Empleado,
+  Usuario,
   Cliente,
-  Producto,
-  OT,
-  OrdenCot,
+  TipoPapel,
+  TipoTerminacion,
+  TipoPersonalizacion,
+  OrdenTrabajo,
+  DetalleOrden,
+  OrdenCotizacion,
+  SolicitudMaterial,
   Chat,
-  Mensaje, 
+  Mensaje,
 };
