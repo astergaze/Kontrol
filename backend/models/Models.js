@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-// --- Modelo Unificado de Usuario ---
 const Usuario = sequelize.define(
   "Usuario",
   {
@@ -11,7 +10,7 @@ const Usuario = sequelize.define(
       autoIncrement: true,
     },
     role: {
-      type: DataTypes.ENUM("admin", "jefe", "empleado"),
+      type: DataTypes.ENUM("jefe", "empleado"),
       allowNull: false,
       defaultValue: "empleado",
     },
@@ -44,7 +43,6 @@ const Usuario = sequelize.define(
   }
 );
 
-// --- Modelo de Cliente ---
 const Cliente = sequelize.define(
   "Cliente",
   {
@@ -64,7 +62,6 @@ const Cliente = sequelize.define(
   }
 );
 
-// --- Modelos de Listas de Precios ---
 const TipoPapel = sequelize.define(
   "TipoPapel",
   {
@@ -102,7 +99,6 @@ const TipoPersonalizacion = sequelize.define(
   { tableName: "tipos_personalizacion", timestamps: false }
 );
 
-// --- Modelos de Órdenes ---
 const OrdenTrabajo = sequelize.define(
   "OrdenTrabajo",
   {
@@ -115,7 +111,6 @@ const OrdenTrabajo = sequelize.define(
     documento: { type: DataTypes.ENUM("Rem", "Fact") },
     observaciones: { type: DataTypes.TEXT },
     
-    // --- CAMPO AGREGADO ---
     estado: {
       type: DataTypes.STRING(30), // Opcionalmente: DataTypes.ENUM("Pendiente", "En Proceso", "Completada")
       allowNull: false,
@@ -142,8 +137,6 @@ const DetalleOrden = sequelize.define(
     copias: { type: DataTypes.INTEGER },
     formato: { type: DataTypes.STRING(30) },
     colores: { type: DataTypes.STRING(30) },
-
-    // --- Claves Foráneas (FK) de Listas de Precios ---
     idPapel: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -191,7 +184,6 @@ const OrdenCotizacion = sequelize.define(
   }
 );
 
-// --- Modelo de Solicitudes de Material ---
 const SolicitudMaterial = sequelize.define(
   "SolicitudMaterial",
   {
@@ -212,7 +204,6 @@ const SolicitudMaterial = sequelize.define(
   }
 );
 
-// --- Modelos de Chat ---
 const Chat = sequelize.define(
   "Chat",
   {
@@ -235,10 +226,6 @@ const Mensaje = sequelize.define(
     timestamps: true,
   }
 );
-
-// =================================================================
-// --- DEFINICIÓN DE RELACIONES ---
-// =================================================================
 
 // --- Relaciones de Órdenes, Clientes y Cotizaciones ---
 Cliente.hasMany(OrdenTrabajo, { foreignKey: "idCliente" });

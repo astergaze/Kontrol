@@ -14,6 +14,30 @@ const {
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const SECRET = "El Psy Kongroo"; //Luego mover a un .env
+const CreateTestUser = async () => {
+  try {
+    const [user, created] = await Usuario.findOrCreate({
+      where: { email: 'Juan@31minutos.com' }, // Campo único para buscar
+      defaults: {
+        role: 'jefe',
+        nombre: 'Juan Carlos',
+        apellido: 'Bodoque',
+        email: 'Juan@31minutos.com',
+        telefono: '0123456789',
+        DNI: '31313131',
+        password: '$2b$10$3TZ13oHxppoQ4.9iHPn8o.FVxzNFiz0fr/aBzrKL20mRI9rx14uvi'
+      }
+    });
+
+    if (created) {
+      console.log('Usuario "jefe" por defecto (Juan Carlos Bodoque) creado.');
+    } else {
+      console.log('El usuario "jefe" por defecto ya existe.');
+    }
+  } catch (error) {
+    console.error('Error al crear el usuario por defecto:', error);
+  }
+};
 const SignUp = async (req, res) => {
   try {
     const { nombre, apellido, email, telefono, DNI } = req.body;
@@ -162,5 +186,6 @@ module.exports = {
   SignUp,
   Login,
   modifyUser,
-  changePwd
+  changePwd,
+  CreateTestUser
 };
