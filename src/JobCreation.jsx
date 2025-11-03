@@ -170,6 +170,16 @@ const MainPage = () => {
                 ))}
               </div>
             </div>
+            <div className="col finishing">
+              <div className="col-header">Personalizacion:</div>
+              <div className="col-rows">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className="row-cell">
+                    <input className="cell-input" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
         <section className="bottom-area">

@@ -13,6 +13,7 @@ import Quotation from "./Quotation";
 import QuotePDF from "./QuotePDF"
 import PriceListuser from "./PriceListuser"
 import Profile from "./Profile"
+import ViewJob from "./ViewJob"
 
 import ModifyPriceList from "./ModifyPriceList"
 
@@ -35,6 +36,7 @@ const App = () => {
       <Route path="/PriceListAdmin" element={<PriceListAdmin />} />{" "}
       {/* Pagina de entrada de trabajos */}
       <Route path="/PreViewJob" element={<PreViewJob />} />{" "}
+      <Route path="/ViewJob" element={<ViewJob />} />{" "}
       {/* Pagina de vista previa de trabajos*/}
       <Route path="/Quotation" element={<Quotation />} />{" "}
       {/*Pagina previa a la generacion del pdf */}
