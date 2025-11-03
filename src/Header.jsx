@@ -108,7 +108,7 @@ const Header = () => {
               </span>
               <div>
                 <p>{userData.nombre} {userData.apellido}</p>
-                <small>{userData.isAdmin ? "Administrador" : "Operador"}</small>
+                <small>{userData.role}</small>
               </div>
             </div>
             {isUserMenuOpen && <UserOptionsMenu />}

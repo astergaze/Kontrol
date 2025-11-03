@@ -14,6 +14,6 @@ app.post('/api/login', Login);
 app.post('/api/modify', modifyUser)
 app.post('/api/changePwd', changePwd)
 app.listen(port, () => {
-    sequelize.sync({ force: true })
+    sequelize.sync({ force: false })
     console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });
