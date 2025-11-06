@@ -1,60 +1,85 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'; 
 import "./css/PriceListAdmin.css";
 import Header from "./Header";
+
+const API_URL = "http://localhost:3001/api";
+
 const ModifyPriceList = () => {
   const navigate = useNavigate();
+
+  const [paperTypes, setPaperTypes] = useState([]);
+  const [terminationTypes, setTerminationTypes] = useState([]);
+
+  useEffect(() => {
+    const fetchPriceLists = async () => {
+      try {
+        const [paperRes, termRes] = await Promise.all([
+          axios.get(`${API_URL}/papers`),
+          axios.get(`${API_URL}/terminations`)
+        ]);
+        
+        setPaperTypes(paperRes.data);
+        setTerminationTypes(termRes.data);
+
+      } catch (error) {
+        console.error("Error al cargar las listas de precios:", error);
+        alert("No se pudieron cargar los precios del servidor.");
+      }
+    };
+
+    fetchPriceLists();
+  }, []); 
 
   const Return = () => {
     navigate("/main");
   };
- const Modify = () => {
+  const Modify = () => {
     navigate("/ModifyPrice");
   };
+
   return (
     <>
       <Header />
       
-       <button className="returnf" onClick={Return}>
-          Volver
-        </button>
+      <button className="returnf" onClick={Return}>
+        Volver
+      </button>
+      
       <div className="PriceList">
-         <div className="titulo-principal">Lista de precios</div>
+        <div className="titulo-principal">Lista de precios</div>
 
-  <div className="lista-precios">
-    <div>
-      <h3>Tipo De Papel</h3>
-      <ul>
-        <li>Papel bond <span className="precio">$2105</span></li>
-        <li>Papel reciclado <span className="precio">$2105</span></li>
-        <li>Papel fotográfico <span className="precio">$2105</span></li>
-        <li>Cartulina <span className="precio">$2105</span></li>
-      </ul>
-    </div>
+        <div className="lista-precios">
+          
+     
+          <div>
+            <h3>Tipo De Papel</h3>
+            <ul>
+             
+              {paperTypes.map((papel) => (
+                <li key={papel.idPapel}>
+                  {papel.nombre} <span className="precio">${papel.precio}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-    <div>
-      <h3>Terminación</h3>
-      <ul>
-        <li>Corte y Troquelado <span className="precio">$2105</span></li>
-        <li>Laminado y Barnizado <span className="precio">$2105</span></li>
-        <li>Encuadernación <span className="precio">$2105</span></li>
-        <li>Plegado y Doblado <span className="precio">$2105</span></li>
-        <li>Montaje y Ensamblaje <span className="precio">$2105</span></li>
-        <li>Personalización Final <span className="precio">$2105</span></li>
-      </ul>
-    </div>
+          
+          <div>
+            <h3>Terminación</h3>
+            <ul>
+              {terminationTypes.map((term) => (
+                <li key={term.idTerminacion}> 
+                  {term.nombre} <span className="precio">${term.precio}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-    <div>
-      <h3>Personalización Final(opciones)</h3>
-      <ul>
-        <li>Estampado</li>
-        <li>Numeración</li>
-        <li>Detalles únicos</li>
-      </ul>
-    </div>
-    
-  </div>
-  <button className="modificar-btn" onClick={Modify}>Modificar</button>
+          
+        </div>
+        <button className="modificar-btn" onClick={Modify}>Modificar</button>
       </div>
     </>
   );

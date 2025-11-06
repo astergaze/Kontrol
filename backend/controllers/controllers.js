@@ -182,10 +182,184 @@ const changePwd = async (req, res) => {
     });
   }
 };
+// --- CORREGIDO: UpdatePriceAndName_Paper ---
+const UpdatePriceAndName_Paper = async (req, res) => {
+  try {
+    const { idTipoPapel, newPrice, newName } = req.body;
+
+    if (!idTipoPapel || newPrice == null || !newName) {
+      return res.status(400).json({
+        message: "Datos incompletos. Se requiere idTipoPapel, newPrice y newName."
+      });
+    }
+
+    const papel = await TipoPapel.findByPk(idTipoPapel);
+
+    if (!papel) {
+      return res.status(404).json({ message: "Tipo de papel no encontrado" });
+    }
+
+    // --- ¡CAMBIO IMPORTANTE AQUÍ! ---
+    papel.precio = newPrice; // Antes: papel.price
+    papel.nombre = newName;   // Antes: papel.name
+    // --- FIN DEL CAMBIO ---
+
+    await papel.save();
+
+    res.status(200).json({ message: "Tipo de papel actualizado correctamente" });
+
+  } catch (error) {
+    console.error("Error al actualizar tipo de papel:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+
+// --- CORREGIDO: UpdatePriceAndName_Terminacion ---
+const UpdatePriceAndName_Terminacion = async (req, res) => {
+  try {
+    const { idTerminacion, newPrice, newName } = req.body;
+
+    if (!idTerminacion || newPrice == null || !newName) {
+      return res.status(400).json({
+        message: "Datos incompletos. Se requiere idTerminacion, newPrice y newName."
+      });
+    }
+
+    const Terminacion = await TipoTerminacion.findByPk(idTerminacion);
+
+    if (!Terminacion) {
+      return res.status(404).json({ message: "Terminación no encontrada" });
+    }
+
+    // --- ¡CAMBIO IMPORTANTE AQUÍ! ---
+    Terminacion.precio = newPrice; // Antes: Terminacion.price
+    Terminacion.nombre = newName;   // Antes: Terminacion.name
+    // --- FIN DEL CAMBIO ---
+
+    await Terminacion.save();
+
+    res.status(200).json({ message: "Terminación actualizada correctamente" });
+
+  } catch (error) {
+    console.error("Error al actualizar terminación:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+const Create_Terminacion = async (req, res) => {
+  try {
+    const { newPrice, newName } = req.body;
+    if (newPrice == null || !newName) {
+      return res.status(400).json({ 
+        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'." 
+      });
+    }
+
+    const newTerminacion = await TipoTerminacion.create({
+      precio: newPrice, // Antes: price
+      nombre: newName   // Antes: name
+    });
+    res.status(201).json(newTerminacion);
+
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        message: "Error al crear la terminación: El nombre ya existe.",
+        error: error.errors.map(e => e.message)
+      });
+    }
+    console.error("Error al crear la terminación:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+
+const Create_Paper = async (req, res) => {
+  try {
+    const { newPrice, newName } = req.body;
+    if (newPrice == null || !newName) {
+      return res.status(400).json({ 
+        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'." 
+      });
+    }
+
+    const newPaper = await TipoPapel.create({
+      precio: newPrice, // Antes: price
+      nombre: newName   // Antes: name
+    });
+    res.status(201).json(newPaper);
+
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        message: "Error al crear el tipo de papel: El nombre ya existe.",
+        error: error.errors.map(e => e.message)
+      });
+    }
+    
+    console.error("Error al crear el tipo de papel:", error); 
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+}
+const GetAll_Papers = async (req, res) => {
+  try {
+    const papeles = await TipoPapel.findAll();
+    res.status(200).json(papeles);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error al obtener tipos de papel" });
+  }
+}
+
+const GetAll_Terminaciones = async (req, res) => {
+  try {
+    const terminaciones = await TipoTerminacion.findAll(); 
+    res.status(200).json(terminaciones);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error al obtener terminaciones" });
+  }
+}
+
+const Delete_Paper = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const papel = await TipoPapel.findByPk(id);
+    if (!papel) {
+      return res.status(404).json({ message: "Tipo de papel no encontrado" });
+    }
+    await papel.destroy();
+    res.status(200).json({ message: "Tipo de papel eliminado" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error al eliminar tipo de papel" });
+  }
+}
+
+const Delete_Terminacion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const terminacion = await TipoTerminacion.findByPk(id); 
+    if (!terminacion) {
+      return res.status(404).json({ message: "Terminación no encontrada" });
+    }
+    await terminacion.destroy();
+    res.status(200).json({ message: "Terminación eliminada" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Error al eliminar terminación" });
+  }
+}
 module.exports = {
   SignUp,
   Login,
   modifyUser,
   changePwd,
-  CreateTestUser
+  CreateTestUser,
+  UpdatePriceAndName_Paper,
+  UpdatePriceAndName_Terminacion,
+  Create_Terminacion,
+  Create_Paper,
+  GetAll_Papers,
+  GetAll_Terminaciones,
+  Delete_Paper,
+  Delete_Terminacion
 };
