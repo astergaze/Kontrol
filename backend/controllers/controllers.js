@@ -348,6 +348,41 @@ const Delete_Terminacion = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar terminación" });
   }
 }
+const GetAll_MaterialRequest = async (req, res) => {
+  try {
+    const solicitudes = await SolicitudMaterial.findAll({
+      where: {
+        estado: 'Pendiente'
+      },
+    });
+
+    res.status(200).json(solicitudes);
+
+  } catch (error) {
+    console.error("Error", error);
+    res.status(500).json({ message: "Error al traer MaterialRequest" });
+  }
+};
+const Acept_or_decline_MaterialRequest = async (req, res) => {
+  try {
+    const { idSolicitud, newestado } = req.body;
+    const materialResponse = await SolicitudMaterial.findByPk(idSolicitud);
+
+    if (!materialResponse) {
+      return res.status(404).json({ message: "Solicitud de material no encontrada" });
+    }
+
+    materialResponse.estado = newestado;
+    await materialResponse.save();
+
+    res.status(200).json(materialResponse); 
+
+  } catch (error) {
+    console.error("Error al aceptar MaterialRequest", error);
+
+    res.status(500).json({ message: "Error al actualizar la solicitud" });
+  }
+};
 module.exports = {
   SignUp,
   Login,
@@ -361,5 +396,7 @@ module.exports = {
   GetAll_Papers,
   GetAll_Terminaciones,
   Delete_Paper,
-  Delete_Terminacion
+  Delete_Terminacion,
+  GetAll_MaterialRequest,
+  Acept_or_decline_MaterialRequest
 };

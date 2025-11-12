@@ -33,7 +33,7 @@
   width: 90%;
   border-width: 3px;
   border-radius: 1px;
-  border-color: white;
+  border-color: rgb(126, 126, 126);
   color: white;
   padding: 0.8rem;
   margin-bottom: 1rem;
@@ -41,4 +41,51 @@
 
 .jobOrder {
   margin-right: 50%;
+}
+
+/* Texto de Material */
+.material {
+  font-size: 16px;
+  /* Le damos un ancho fijo para alinear las columnas */
+  flex-basis: 300px; 
+  flex-shrink: 0; /* No se achica */
+}
+
+.jobOrder {
+  font-size: 16px;
+  /* ESTA ES LA CLAVE: 
+    flex-grow: 1; hace que este elemento ocupe
+    TODO el espacio sobrante, empujando los
+    botones hacia la derecha.
+  */
+  flex-grow: 1;
+}
+
+.Acept,
+.Decline {
+  background-color: #ffffff; /* Fondo blanco (como en la imagen) */
+  color: #000000; /* Ícono/texto negro */
+  
+  border: none;
+  width: 30px; /* Ancho fijo */
+  height: 30px; /* Alto fijo */
+  border-radius: 50%; /* Círculo perfecto */
+  
+  font-size: 18px; 
+  font-weight: bold;
+  cursor: pointer;
+  
+  margin-left: 10px; /* Espacio entre los botones */
+
+  /* Flexbox para centrar el ícono perfectamente en el círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Ajuste para centrado vertical */
+}
+
+/* Efecto hover sutil */
+.Acept:hover,
+.Decline:hover {
+  background-color: #e0e0e0; /* Gris claro al pasar el mouse */
 }
