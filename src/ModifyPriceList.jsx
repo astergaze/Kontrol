@@ -27,43 +27,32 @@ const ModifyPriceList = () => {
       const papersData = paperRes.data;
       const termData = termRes.data;
 
-      const mappedPapers = papersData.map(p => ({
-        id: p.idPapel,    
-        nombre: p.nombre,  
-        precio: p.precio   
-      }));
+      setPaperTypes(papersData);
+      setTerminationTypes(termData);
 
-      const mappedTerms = termData.map(t => ({
-        id: t.idTerminacion, 
-        nombre: t.nombre,     
-        precio: t.precio      
-      }));
-
-
-      setPaperTypes(mappedPapers);
-      setTerminationTypes(mappedTerms);
-
+      // Selecciona el primer item de la lista activa (o null si esta vacia)
       if (activeTab === 'papel') {
-        setSelectedItem(mappedPapers[0] || null);
+        setSelectedItem(papersData[0] || null);
       } else {
-        setSelectedItem(mappedTerms[0] || null);
+        setSelectedItem(termData[0] || null);
       }
 
     } catch (error) {
       console.error("Error cargando las listas:", error);
-      const message = error.response?.data?.message || "Error al cargar datos del servidor.";
-
+      // Opcional: Mostrar un mensaje de error al usuario
+      // const message = error.response?.data?.message || "Error al cargar datos del servidor.";
     }
   };
 
   useEffect(() => {
     fetchLists();
-  }, []);
+  }, []); // El array vacío asegura que solo se ejecute una vez al montar
 
   useEffect(() => {
     if (selectedItem) {
       setModifyForm(selectedItem);
     } else {
+      // Resetea el formulario si no hay nada seleccionado
       setModifyForm({ id: '', nombre: "", precio: "" });
     }
   }, [selectedItem]);
@@ -78,8 +67,9 @@ const ModifyPriceList = () => {
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
-    setAddForm({ nombre: "", precio: "" });
+    setAddForm({ nombre: "", precio: "" }); // Resetea formulario de añadir
 
+    // Selecciona el primer item de la nueva pestaña
     if (tabName === "papel") {
       setSelectedItem(paperTypes[0] || null);
     } else {
@@ -90,56 +80,51 @@ const ModifyPriceList = () => {
   const handleAdd = async (e) => {
     e.preventDefault(); 
     
+    // El endpoint depende de la pestaña activa
     const endpoint = activeTab === "papel" ? `${API_URL}/createPaper` : `${API_URL}/createTerminacion`;
 
     try {
-      // (Esta parte estaba bien)
       const res = await axios.post(endpoint, {
         newName: addForm.nombre,
         newPrice: addForm.precio
       });
       
-      setAddForm({ nombre: "", precio: "" }); 
-      await fetchLists(); 
+      setAddForm({ nombre: "", precio: "" }); // Limpia el formulario
+      await fetchLists(); // Recarga la lista para mostrar el nuevo ítem
 
     } catch (error) {
       console.error(`Error añadiendo a ${activeTab}:`, error);
-      const message = error.response?.data?.message || error.message || "Error al añadir";
-
+      // const message = error.response?.data?.message || error.message || "Error al añadir";
     }
   };
 
   const handleModify = async (e) => {
     e.preventDefault(); 
     if (!modifyForm || !modifyForm.id) {
-
-      return;
+      return; // No hacer nada si no hay un item seleccionado
     }
 
     const endpoint = activeTab === "papel" ? `${API_URL}/updatePaper` : `${API_URL}/updateTerminacion`;
-    const idKey = activeTab === "papel" ? "idTipoPapel" : "idTerminacion";
 
     try {
       const res = await axios.post(endpoint, {
-        [idKey]: modifyForm.id,      
+        id: modifyForm.id,           
         newName: modifyForm.nombre,  
-        newPrice: modifyForm.precio   
+        newPrice: modifyForm.precio  
       });
 
-      await fetchLists();
+      await fetchLists(); // Recarga la lista para mostrar los cambios
 
     } catch (error) {
       console.error(`Error modificando en ${activeTab}:`, error);
-      const message = error.response?.data?.message || error.message || "Error al modificar";
- 
+      // const message = error.response?.data?.message || error.message || "Error al modificar";
     }
   };
 
   const handleDelete = async () => {
     if (!selectedItem || !selectedItem.id) {
-      return;
+      return; // No hacer nada si no hay ítem seleccionado
     }
-
 
     const endpoint = activeTab === "papel" 
       ? `${API_URL}/paper/${selectedItem.id}` 
@@ -147,12 +132,11 @@ const ModifyPriceList = () => {
 
     try {
       const res = await axios.delete(endpoint);
-      await fetchLists();
+      await fetchLists(); // Recarga la lista para quitar el item eliminado
 
     } catch (error) {
       console.error(`Error eliminando de ${activeTab}:`, error);
-      const message = error.response?.data?.message || error.message || "Error al eliminar";
-
+      // const message = error.response?.data?.message || error.message || "Error al eliminar";
     }
   };
 
@@ -167,7 +151,7 @@ const ModifyPriceList = () => {
         <div className="modify-title">Modificar</div>
 
         <div className="modify-content-layout">
-          {/* --- PANEL IZQUIERDO --- */}
+          {/* --- PANEL IZQUIERDO (Formularios) --- */}
           <div className="left-panel">
             <div className="tab-container">
               <button
@@ -341,7 +325,7 @@ const ModifyPriceList = () => {
             )}
           </div>
 
-          {/* --- PANEL DERECHO --- */}
+          {/* --- PANEL DERECHO (Listas) --- */}
           <div className="right-panel">
             
             {activeTab === 'papel' && (
@@ -353,7 +337,7 @@ const ModifyPriceList = () => {
                 <ul className="price-list">
                   {paperTypes.map((item) => (
                     <li
-                      key={item.id}
+                      key={item.id} 
                       className={`list-item ${selectedItem && selectedItem.id === item.id ? "selected" : ""}`}
                       onClick={() => handleSelectItem(item)}
                     >

@@ -14,30 +14,92 @@ const {
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const SECRET = "El Psy Kongroo"; //Luego mover a un .env
-const CreateTestUser = async () => {
+
+const CreateTest = async () => {
   try {
-    const [user, created] = await Usuario.findOrCreate({
-      where: { email: 'Juan@31minutos.com' }, // Campo único para buscar
+    const [user, userCreated] = await Usuario.findOrCreate({
+      where: { email: "Juan@31minutos.com" },
       defaults: {
-        role: 'jefe',
-        nombre: 'Juan Carlos',
-        apellido: 'Bodoque',
-        email: 'Juan@31minutos.com',
-        telefono: '0123456789',
-        DNI: '31313131',
-        password: '$2b$10$3TZ13oHxppoQ4.9iHPn8o.FVxzNFiz0fr/aBzrKL20mRI9rx14uvi'
-      }
+        role: "jefe",
+        nombre: "Juan Carlos",
+        apellido: "Bodoque",
+        email: "Juan@31minutos.com",
+        telefono: "0123456789",
+        DNI: "31313131",
+        password:
+          "$2b$10$3TZ13oHxppoQ4.9iHPn8o.FVxzNFiz0fr/aBzrKL20mRI9rx14uvi",
+      },
     });
 
-    if (created) {
+    if (userCreated) {
       console.log('Usuario "jefe" por defecto (Juan Carlos Bodoque) creado.');
     } else {
       console.log('El usuario "jefe" por defecto ya existe.');
     }
+
+    const [cliente, clienteCreated] = await Cliente.findOrCreate({
+      where: { nomClien: "Tulio Triviño S.A." },
+      defaults: {
+        nomClien: "Tulio Triviño S.A.",
+        responsable: "Tulio Triviño",
+        contacto: "555-1234",
+        direccion: "Estudios 31 Minutos, Santiago",
+      },
+    });
+
+    if (clienteCreated) {
+      console.log("Cliente de prueba (Tulio Triviño S.A.) creado.");
+    }
+
+    const [ot, otCreated] = await OrdenTrabajo.findOrCreate({
+      where: { id: 1 },
+      defaults: {
+        id: 1,
+        fechaIn: new Date(),
+        prioridad: "A",
+        envio: "Retira",
+        documento: "Fact",
+        estado: "En Proceso",
+        clienteId: cliente.id, 
+      },
+    });
+
+    if (otCreated) {
+      console.log("Orden de Trabajo de prueba (OT-001) creada.");
+    }
+    const [solicitud1, sol1Created] = await SolicitudMaterial.findOrCreate({
+      where: { material: "Resma de papel A4 - 500 Hojas" },
+      defaults: {
+        material: "Resma de papel A4 - 500 Hojas",
+        estado: "Pendiente",
+        usuarioId: user.id,     // Asociada al usuario Bodoque
+        ordenTrabajoId: ot.id, // Asociada a la OT de Tulio
+      },
+    });
+
+    if (sol1Created) {
+      console.log("Solicitud de material 1 (Pendiente) creada.");
+    }
+
+    const [solicitud2, sol2Created] = await SolicitudMaterial.findOrCreate({
+      where: { material: "Tinta Negra HP - Modelo 664" },
+      defaults: {
+        material: "Tinta Negra HP - Modelo 664",
+        estado: "Pendiente",   
+        usuarioId: user.id,
+        ordenTrabajoId: ot.id,
+      },
+    });
+
+    if (sol2Created) {
+      console.log("Solicitud de material 2 (Aprobada) creada.");
+    }
+
   } catch (error) {
-    console.error('Error al crear el usuario por defecto:', error);
+    console.error("Error al crear los datos de prueba:", error);
   }
 };
+
 const SignUp = async (req, res) => {
   try {
     const { nombre, apellido, email, telefono, DNI } = req.body;
@@ -51,23 +113,25 @@ const SignUp = async (req, res) => {
       password: hashedPassword,
     });
     const userData = {
-      idUsuario: newUsuario.idUsuario,
+      id: newUsuario.id,
       nombre: newUsuario.nombre,
       email: newUsuario.email,
       role: newUsuario.role,
     };
-    res.status(201).json({ message: "Usuario creado con éxito", data: userData });
-
+    res
+      .status(201)
+      .json({ message: "Usuario creado con éxito", data: userData });
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).json({
-        message: "Error al crear usuario: El email, teléfono o DNI ya están registrados.",
-        error: error.errors.map(e => e.message)
+        message:
+          "Error al crear usuario: El email, teléfono o DNI ya están registrados.",
+        error: error.errors.map((e) => e.message),
       });
     }
     res.status(500).json({
       message: "Error interno del servidor al crear el usuario",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -87,9 +151,9 @@ const Login = async (req, res) => {
       return res.status(401).json({ message: "DNI o contraseña incorrectos" });
     }
     const dataLoad = {
-      id: usuarioEncontrado.idUsuario, 
+      id: usuarioEncontrado.id,
       DNI: usuarioEncontrado.DNI,
-      role: usuarioEncontrado.role,    
+      role: usuarioEncontrado.role,
       email: usuarioEncontrado.email,
       nombre: usuarioEncontrado.nombre,
       apellido: usuarioEncontrado.apellido,
@@ -102,7 +166,6 @@ const Login = async (req, res) => {
       message: "Inicio de sesion exitoso",
       token: token,
     });
-
   } catch (error) {
     res
       .status(500)
@@ -118,7 +181,9 @@ const modifyUser = async (req, res) => {
     });
 
     if (!usuarioEncontrado) {
-      return res.status(404).json({ message: "Ocurrió un error al buscar el usuario" });
+      return res
+        .status(404)
+        .json({ message: "Ocurrió un error al buscar el usuario" });
     }
     if (email) {
       usuarioEncontrado.email = email;
@@ -128,9 +193,9 @@ const modifyUser = async (req, res) => {
     }
     await usuarioEncontrado.save();
     const dataLoad = {
-      id: usuarioEncontrado.idUsuario,
+      id: usuarioEncontrado.id,
       DNI: usuarioEncontrado.DNI,
-      role: usuarioEncontrado.role,    
+      role: usuarioEncontrado.role,
       email: usuarioEncontrado.email,
       nombre: usuarioEncontrado.nombre,
       apellido: usuarioEncontrado.apellido,
@@ -141,18 +206,20 @@ const modifyUser = async (req, res) => {
       expiresIn: "30d",
     });
 
-    res.status(200).json({ message: "Datos actualizados correctamente", token: token });
-
+    res
+      .status(200)
+      .json({ message: "Datos actualizados correctamente", token: token });
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({ 
-        message: "Error al actualizar: El email o teléfono ya están registrados.",
-        error: error.errors.map(e => e.message)
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(400).json({
+        message:
+          "Error al actualizar: El email o teléfono ya están registrados.",
+        error: error.errors.map((e) => e.message),
       });
     }
-    res.status(500).json({ 
-      message: "Error interno del servidor", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error interno del servidor",
+      error: error.message,
     });
   }
 };
@@ -174,131 +241,125 @@ const changePwd = async (req, res) => {
     usuarioEncontrado.password = hashedPassword;
     await usuarioEncontrado.save();
     res.status(200).json({ message: "Contraseña cambiada correctamente" });
-
   } catch (error) {
-    res.status(500).json({ 
-      message: "Error interno del servidor al cambiar la contraseña", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error interno del servidor al cambiar la contraseña",
+      error: error.message,
     });
   }
 };
-// --- CORREGIDO: UpdatePriceAndName_Paper ---
+
 const UpdatePriceAndName_Paper = async (req, res) => {
   try {
-    const { idTipoPapel, newPrice, newName } = req.body;
+    const { id, newPrice, newName } = req.body;
 
-    if (!idTipoPapel || newPrice == null || !newName) {
+    if (!id || newPrice == null || !newName) {
       return res.status(400).json({
-        message: "Datos incompletos. Se requiere idTipoPapel, newPrice y newName."
+        message: "Datos incompletos. Se requiere id, newPrice y newName.",
       });
     }
 
-    const papel = await TipoPapel.findByPk(idTipoPapel);
+    const papel = await TipoPapel.findByPk(id);
 
     if (!papel) {
       return res.status(404).json({ message: "Tipo de papel no encontrado" });
     }
 
-    // --- ¡CAMBIO IMPORTANTE AQUÍ! ---
-    papel.precio = newPrice; // Antes: papel.price
-    papel.nombre = newName;   // Antes: papel.name
-    // --- FIN DEL CAMBIO ---
+    papel.precio = newPrice;
+    papel.nombre = newName;
 
     await papel.save();
 
-    res.status(200).json({ message: "Tipo de papel actualizado correctamente" });
-
+    res
+      .status(200)
+      .json({ message: "Tipo de papel actualizado correctamente" });
   } catch (error) {
     console.error("Error al actualizar tipo de papel:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
-}
+};
 
-// --- CORREGIDO: UpdatePriceAndName_Terminacion ---
 const UpdatePriceAndName_Terminacion = async (req, res) => {
   try {
-    const { idTerminacion, newPrice, newName } = req.body;
+    const { id, newPrice, newName } = req.body;
 
-    if (!idTerminacion || newPrice == null || !newName) {
+    if (!id || newPrice == null || !newName) {
       return res.status(400).json({
-        message: "Datos incompletos. Se requiere idTerminacion, newPrice y newName."
+        message: "Datos incompletos. Se requiere id, newPrice y newName.",
       });
     }
 
-    const Terminacion = await TipoTerminacion.findByPk(idTerminacion);
+    const terminacion = await TipoTerminacion.findByPk(id); 
 
-    if (!Terminacion) {
+    if (!terminacion) {
       return res.status(404).json({ message: "Terminación no encontrada" });
     }
 
-    // --- ¡CAMBIO IMPORTANTE AQUÍ! ---
-    Terminacion.precio = newPrice; // Antes: Terminacion.price
-    Terminacion.nombre = newName;   // Antes: Terminacion.name
-    // --- FIN DEL CAMBIO ---
+    terminacion.precio = newPrice;
+    terminacion.nombre = newName;
 
-    await Terminacion.save();
+    await terminacion.save();
 
     res.status(200).json({ message: "Terminación actualizada correctamente" });
-
   } catch (error) {
     console.error("Error al actualizar terminación:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
-}
+};
+
 const Create_Terminacion = async (req, res) => {
   try {
     const { newPrice, newName } = req.body;
     if (newPrice == null || !newName) {
-      return res.status(400).json({ 
-        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'." 
+      return res.status(400).json({
+        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'.",
       });
     }
 
     const newTerminacion = await TipoTerminacion.create({
-      precio: newPrice, // Antes: price
-      nombre: newName   // Antes: name
+      precio: newPrice,
+      nombre: newName,
     });
     res.status(201).json(newTerminacion);
-
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).json({
         message: "Error al crear la terminación: El nombre ya existe.",
-        error: error.errors.map(e => e.message)
+        error: error.errors.map((e) => e.message),
       });
     }
     console.error("Error al crear la terminación:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
-}
+};
 
 const Create_Paper = async (req, res) => {
   try {
     const { newPrice, newName } = req.body;
     if (newPrice == null || !newName) {
-      return res.status(400).json({ 
-        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'." 
+      return res.status(400).json({
+        message: "Datos incompletos. Se requiere 'newPrice' y 'newName'.",
       });
     }
 
     const newPaper = await TipoPapel.create({
-      precio: newPrice, // Antes: price
-      nombre: newName   // Antes: name
+      precio: newPrice,
+      nombre: newName,
     });
     res.status(201).json(newPaper);
-
   } catch (error) {
-    if (error.name === 'SequelizeUniqueConstraintError') {
+    if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).json({
         message: "Error al crear el tipo de papel: El nombre ya existe.",
-        error: error.errors.map(e => e.message)
+        error: error.errors.map((e) => e.message),
       });
     }
-    
-    console.error("Error al crear el tipo de papel:", error); 
+
+    console.error("Error al crear el tipo de papel:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
-}
+};
+
 const GetAll_Papers = async (req, res) => {
   try {
     const papeles = await TipoPapel.findAll();
@@ -307,21 +368,21 @@ const GetAll_Papers = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Error al obtener tipos de papel" });
   }
-}
+};
 
 const GetAll_Terminaciones = async (req, res) => {
   try {
-    const terminaciones = await TipoTerminacion.findAll(); 
+    const terminaciones = await TipoTerminacion.findAll();
     res.status(200).json(terminaciones);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Error al obtener terminaciones" });
   }
-}
+};
 
 const Delete_Paper = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const papel = await TipoPapel.findByPk(id);
     if (!papel) {
       return res.status(404).json({ message: "Tipo de papel no encontrado" });
@@ -332,12 +393,12 @@ const Delete_Paper = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Error al eliminar tipo de papel" });
   }
-}
+};
 
 const Delete_Terminacion = async (req, res) => {
   try {
     const { id } = req.params;
-    const terminacion = await TipoTerminacion.findByPk(id); 
+    const terminacion = await TipoTerminacion.findByPk(id);
     if (!terminacion) {
       return res.status(404).json({ message: "Terminación no encontrada" });
     }
@@ -347,48 +408,52 @@ const Delete_Terminacion = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Error al eliminar terminación" });
   }
-}
+};
+
 const GetAll_MaterialRequest = async (req, res) => {
   try {
     const solicitudes = await SolicitudMaterial.findAll({
       where: {
-        estado: 'Pendiente'
+        estado: "Pendiente",
       },
+      // Quizas agregar un include para saber quien la pidio
     });
 
     res.status(200).json(solicitudes);
-
   } catch (error) {
     console.error("Error", error);
     res.status(500).json({ message: "Error al traer MaterialRequest" });
   }
 };
+
 const Acept_or_decline_MaterialRequest = async (req, res) => {
   try {
-    const { idSolicitud, newestado } = req.body;
-    const materialResponse = await SolicitudMaterial.findByPk(idSolicitud);
+    const { id, newestado } = req.body;
+    const materialResponse = await SolicitudMaterial.findByPk(id); 
 
     if (!materialResponse) {
-      return res.status(404).json({ message: "Solicitud de material no encontrada" });
+      return res
+        .status(404)
+        .json({ message: "Solicitud de material no encontrada" });
     }
 
     materialResponse.estado = newestado;
     await materialResponse.save();
 
-    res.status(200).json(materialResponse); 
-
+    res.status(200).json(materialResponse);
   } catch (error) {
     console.error("Error al aceptar MaterialRequest", error);
 
     res.status(500).json({ message: "Error al actualizar la solicitud" });
   }
 };
+
 module.exports = {
   SignUp,
   Login,
   modifyUser,
   changePwd,
-  CreateTestUser,
+  CreateTest,
   UpdatePriceAndName_Paper,
   UpdatePriceAndName_Terminacion,
   Create_Terminacion,
@@ -398,5 +463,5 @@ module.exports = {
   Delete_Paper,
   Delete_Terminacion,
   GetAll_MaterialRequest,
-  Acept_or_decline_MaterialRequest
+  Acept_or_decline_MaterialRequest,
 };

@@ -4,7 +4,7 @@ const sequelize = require("../config/db");
 const Usuario = sequelize.define(
   "Usuario",
   {
-    idUsuario: {
+    id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
@@ -46,7 +46,7 @@ const Usuario = sequelize.define(
 const Cliente = sequelize.define(
   "Cliente",
   {
-    idCliente: {
+    id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
@@ -65,7 +65,7 @@ const Cliente = sequelize.define(
 const TipoPapel = sequelize.define(
   "TipoPapel",
   {
-    idPapel: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: DataTypes.STRING(50), allowNull: false, unique: true },
     precio: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   },
@@ -75,7 +75,7 @@ const TipoPapel = sequelize.define(
 const TipoTerminacion = sequelize.define(
   "TipoTerminacion",
   {
-    idTerminacion: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -89,7 +89,7 @@ const TipoTerminacion = sequelize.define(
 const TipoPersonalizacion = sequelize.define(
   "TipoPersonalizacion",
   {
-    idPersonalizacion: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -102,7 +102,7 @@ const TipoPersonalizacion = sequelize.define(
 const OrdenTrabajo = sequelize.define(
   "OrdenTrabajo",
   {
-    idOT: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     fechaIn: { type: DataTypes.DATEONLY },
     fechaFin: { type: DataTypes.DATEONLY },
     archivo: { type: DataTypes.STRING(20) },
@@ -110,7 +110,7 @@ const OrdenTrabajo = sequelize.define(
     envio: { type: DataTypes.ENUM("Retira", "Envia") },
     documento: { type: DataTypes.ENUM("Rem", "Fact") },
     observaciones: { type: DataTypes.TEXT },
-    
+
     estado: {
       type: DataTypes.STRING(30), // Opcionalmente: DataTypes.ENUM("Pendiente", "En Proceso", "Completada")
       allowNull: false,
@@ -126,7 +126,7 @@ const OrdenTrabajo = sequelize.define(
 const DetalleOrden = sequelize.define(
   "DetalleOrden",
   {
-    idDetalle: {
+    id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
@@ -137,30 +137,6 @@ const DetalleOrden = sequelize.define(
     copias: { type: DataTypes.INTEGER },
     formato: { type: DataTypes.STRING(30) },
     colores: { type: DataTypes.STRING(30) },
-    idPapel: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: TipoPapel,
-        key: "idPapel",
-      },
-    },
-    idTerminacion: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: TipoTerminacion,
-        key: "idTerminacion",
-      },
-    },
-    idPersonalizacion: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: TipoPersonalizacion,
-        key: "idPersonalizacion",
-      },
-    },
   },
   {
     tableName: "detalles_orden",
@@ -171,7 +147,7 @@ const DetalleOrden = sequelize.define(
 const OrdenCotizacion = sequelize.define(
   "OrdenCotizacion",
   {
-    idOc: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     precioImpresion: { type: DataTypes.DECIMAL(10, 2) },
     precioPersonalizacion: { type: DataTypes.DECIMAL(10, 2) },
     precioTerminacion: { type: DataTypes.DECIMAL(10, 2) },
@@ -187,7 +163,7 @@ const OrdenCotizacion = sequelize.define(
 const SolicitudMaterial = sequelize.define(
   "SolicitudMaterial",
   {
-    idSolicitud: {
+    id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
       autoIncrement: true,
@@ -207,7 +183,7 @@ const SolicitudMaterial = sequelize.define(
 const Chat = sequelize.define(
   "Chat",
   {
-    idChat: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
   },
   {
     tableName: "chats",
@@ -218,7 +194,7 @@ const Chat = sequelize.define(
 const Mensaje = sequelize.define(
   "Mensaje",
   {
-    idMen: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+    id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     contMen: { type: DataTypes.TEXT, allowNull: false },
   },
   {
@@ -227,64 +203,69 @@ const Mensaje = sequelize.define(
   }
 );
 
-// --- Relaciones de Órdenes, Clientes y Cotizaciones ---
-Cliente.hasMany(OrdenTrabajo, { foreignKey: "idCliente" });
-OrdenTrabajo.belongsTo(Cliente, { foreignKey: "idCliente" });
+// Un Cliente tiene muchas Ordenes de Trabajo
+Cliente.hasMany(OrdenTrabajo, { foreignKey: "clienteId" });
+OrdenTrabajo.belongsTo(Cliente, { foreignKey: "clienteId" });
 
-Cliente.hasMany(OrdenCotizacion, { foreignKey: "idCliente" });
-OrdenCotizacion.belongsTo(Cliente, { foreignKey: "idCliente" });
+// Un Cliente tiene muchas Ordenes de Cotización
+Cliente.hasMany(OrdenCotizacion, { foreignKey: "clienteId" });
+OrdenCotizacion.belongsTo(Cliente, { foreignKey: "clienteId" });
 
-OrdenTrabajo.hasMany(DetalleOrden, { foreignKey: "idOT" });
-DetalleOrden.belongsTo(OrdenTrabajo, { foreignKey: "idOT" });
+// Una Orden de Trabajo tiene muchos Detalles
+OrdenTrabajo.hasMany(DetalleOrden, { foreignKey: "ordenTrabajoId" });
+DetalleOrden.belongsTo(OrdenTrabajo, { foreignKey: "ordenTrabajoId" });
 
+// Relación N:M entre Cotización y Orden de Trabajo
 OrdenCotizacion.belongsToMany(OrdenTrabajo, {
   through: "cotizacion_ots",
-  foreignKey: "idOc",
+  foreignKey: "ordenCotizacionId", 
 });
 OrdenTrabajo.belongsToMany(OrdenCotizacion, {
   through: "cotizacion_ots",
-  foreignKey: "idOT",
+  foreignKey: "ordenTrabajoId",
 });
 
 // --- Relaciones de Listas de Precios (con Detalles de Orden) ---
-TipoPapel.hasMany(DetalleOrden, { foreignKey: "idPapel" });
-DetalleOrden.belongsTo(TipoPapel, { foreignKey: "idPapel" });
+TipoPapel.hasMany(DetalleOrden, { foreignKey: "tipoPapelId" });
+DetalleOrden.belongsTo(TipoPapel, { foreignKey: "tipoPapelId" });
 
-TipoTerminacion.hasMany(DetalleOrden, { foreignKey: "idTerminacion" });
-DetalleOrden.belongsTo(TipoTerminacion, { foreignKey: "idTerminacion" });
+TipoTerminacion.hasMany(DetalleOrden, { foreignKey: "tipoTerminacionId" });
+DetalleOrden.belongsTo(TipoTerminacion, { foreignKey: "tipoTerminacionId" });
 
-TipoPersonalizacion.hasMany(DetalleOrden, { foreignKey: "idPersonalizacion" });
+TipoPersonalizacion.hasMany(DetalleOrden, { foreignKey: "tipoPersonalizacionId" });
 DetalleOrden.belongsTo(TipoPersonalizacion, {
-  foreignKey: "idPersonalizacion",
+  foreignKey: "tipoPersonalizacionId",
 });
 
-// --- Relaciones de Solicitud de Material ---
-OrdenTrabajo.hasMany(SolicitudMaterial, { foreignKey: "idOT" });
-SolicitudMaterial.belongsTo(OrdenTrabajo, { foreignKey: "idOT" });
+// Una Orden de Trabajo puede tener varias solicitudes
+OrdenTrabajo.hasMany(SolicitudMaterial, { foreignKey: "ordenTrabajoId" });
+SolicitudMaterial.belongsTo(OrdenTrabajo, { foreignKey: "ordenTrabajoId" });
 
-Usuario.hasMany(SolicitudMaterial, { foreignKey: "idUsuario" });
-SolicitudMaterial.belongsTo(Usuario, { foreignKey: "idUsuario" });
+// Un Usuario (empleado) crea la solicitud
+Usuario.hasMany(SolicitudMaterial, { foreignKey: "usuarioId" });
+SolicitudMaterial.belongsTo(Usuario, { foreignKey: "usuarioId" });
 
-// --- Relaciones de Chat ---
-Chat.hasMany(Mensaje, { foreignKey: "idChat" });
-Mensaje.belongsTo(Chat, { foreignKey: "idChat" });
+// Un Chat tiene muchos Mensajes
+Chat.hasMany(Mensaje, { foreignKey: "chatId" });
+Mensaje.belongsTo(Chat, { foreignKey: "chatId" });
 
-Usuario.hasMany(Mensaje, { foreignKey: "idUsuarioSender" });
+// Un Usuario (remitente) envía muchos mensajes
+Usuario.hasMany(Mensaje, { foreignKey: "remitenteId" });
 Mensaje.belongsTo(Usuario, {
   as: "remitente",
-  foreignKey: "idUsuarioSender",
+  foreignKey: "remitenteId", // Debe coincidir
 });
 
+// Relación N:M entre Usuarios y Chats
 Usuario.belongsToMany(Chat, {
   through: "usuario_chat",
-  foreignKey: "idUsuario",
+  foreignKey: "usuarioId",
 });
 Chat.belongsToMany(Usuario, {
   through: "usuario_chat",
-  foreignKey: "idChat",
+  foreignKey: "chatId",
 });
 
-// --- Exports ---
 module.exports = {
   Usuario,
   Cliente,

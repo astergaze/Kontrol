@@ -4,7 +4,7 @@ const sequelize = require("./config/db");
 const app = express();
 const port = 3001;
 
-const { SignUp, Login, modifyUser, changePwd, CreateTestUser, UpdatePriceAndName_Paper, UpdatePriceAndName_Terminacion,
+const { SignUp, Login, modifyUser, changePwd, CreateTest, UpdatePriceAndName_Paper, UpdatePriceAndName_Terminacion,
   Create_Terminacion,Create_Paper,GetAll_Papers,GetAll_Terminaciones,Delete_Paper,Delete_Terminacion,GetAll_MaterialRequest,
 Acept_or_decline_MaterialRequest } = require('./controllers/controllers');
 
@@ -32,7 +32,7 @@ app.listen(port, () => {
     sequelize.sync({ force: false })
       .then(() => {
         console.log("Base de datos sincronizada.");
-        return CreateTestUser();
+        return CreateTest();
       })
       .then(() => {
         console.log(`Servidor backend corriendo en http://localhost:${port}`);
