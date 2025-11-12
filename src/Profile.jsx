@@ -14,6 +14,7 @@ const Profile = () => {
   const [userPhone, setUserPhone] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -29,6 +30,7 @@ const Profile = () => {
       navigate("/");
     }
   }, [navigate]);
+
   useEffect(() => {
     if (userData) {
       const emailFromToken = userData.email || "";
@@ -42,9 +44,9 @@ const Profile = () => {
   }, [userData]);
 
   const Return = () => {
-    if(userData.role == "jefe"){
-      navigate("/main")
-    }else {
+    if (userData.role === "jefe") {
+      navigate("/main");
+    } else {
       navigate("/mainU");
     }
   };
@@ -55,6 +57,7 @@ const Profile = () => {
     setErrors({});
     setIsEditing(true);
   };
+
   const validate = () => {
     let formErrors = {};
     let isValid = true;
@@ -75,11 +78,29 @@ const Profile = () => {
   const handleSave = async () => {
     if (validate()) {
       try {
-        const res = await axios.post("http://localhost:3001/api/modify", {
-          phone: userPhone,
-          email: userEmail,
-          DNI: userData.DNI,
-        });
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+          navigate("/");
+          return;
+        }
+
+        const headers = {
+          Authorization: token,
+        };
+
+        const res = await axios.post(
+          "http://localhost:3001/api/modify",
+          {
+            phone: userPhone,
+            email: userEmail,
+            DNI: userData.DNI,
+          },
+          {
+            headers: headers,
+          }
+        );
+
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
           try {
@@ -88,13 +109,16 @@ const Profile = () => {
           } catch (e) {
             console.error("Error al decodificar el nuevo token:", e);
           }
-        }
-        //console.log("Guardando cambios:", res.data);
+        } //console.log("Guardando cambios:", res.data);
         setSavedEmail(userEmail);
         setSavedPhone(userPhone);
         setIsEditing(false);
       } catch (error) {
         console.error("Error al guardar:", error);
+        const errorMessage =
+          error.response?.data?.message ||
+          "No se pudo guardar la información. Intente más tarde.";
+        alert(errorMessage);
         setErrors({
           api: "No se pudo guardar la informacion. Intente mas tarde.",
         });
@@ -110,97 +134,104 @@ const Profile = () => {
     setErrors({});
     setIsEditing(false);
   };
+
   if (!userData) {
     return (
       <>
-        <Header />
+        <Header />{" "}
         <div className="generalContent">
-          <p>Cargando</p>
-        </div>
+          <p>Cargando</p>{" "}
+        </div>{" "}
       </>
     );
   }
+
   return (
     <>
-      <Header />
+      <Header />{" "}
       <div className="generalContent">
+        {" "}
         <button className="returnf" onClick={Return}>
-          Volver
-        </button>
+          Volver{" "}
+        </button>{" "}
         <div className="ProfileContainer">
+          {" "}
           <img
             src="https://i.imgur.com/PTl7Fsg.png"
             alt="Profile Image"
             className="profileLogo"
-          />
+          />{" "}
           <div className="profileData">
+            {" "}
             <div>
-              <strong>Nombre:</strong> {userData.nombre}
-            </div>
+              <strong>Nombre:</strong> {userData.nombre}{" "}
+            </div>{" "}
             <div>
-              <strong>Apellido:</strong> {userData.apellido}
-            </div>
+              <strong>Apellido:</strong> {userData.apellido}{" "}
+            </div>{" "}
             <div className={`data-row ${errors.userEmail ? "has-error" : ""}`}>
-              <strong>Correo:</strong>
+              <strong>Correo:</strong>{" "}
               {isEditing ? (
                 <>
+                  {" "}
                   <input
                     type="email"
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
                     className="editInput"
-                  />
+                  />{" "}
                   {errors.userEmail && (
                     <p className="errorText">{errors.userEmail}</p>
-                  )}
+                  )}{" "}
                 </>
               ) : (
                 savedEmail
-              )}
-            </div>
+              )}{" "}
+            </div>{" "}
             <div className={`data-row ${errors.userPhone ? "has-error" : ""}`}>
-              <strong>Celular:</strong>
+              <strong>Celular:</strong>{" "}
               {isEditing ? (
                 <>
+                  {" "}
                   <input
                     type="tel"
                     value={userPhone}
                     onChange={(e) => setUserPhone(e.target.value)}
                     className="editInput"
-                  />
+                  />{" "}
                   {errors.userPhone && (
                     <p className="errorText">{errors.userPhone}</p>
-                  )}
+                  )}{" "}
                 </>
               ) : (
                 savedPhone
-              )}
-            </div>
+              )}{" "}
+            </div>{" "}
             <div>
-              <strong>DNI:</strong> {userData.DNI}
-            </div>
+              <strong>DNI:</strong> {userData.DNI}{" "}
+            </div>{" "}
             <div>
-              <strong>Fecha de alta:</strong> {userData.fechaAlta || "N/A"}
-            </div>
-
-            {errors.api && <p className="errorText">{errors.api}</p>}
+              <strong>Fecha de alta:</strong> {userData.fechaAlta || "N/A"}{" "}
+            </div>{" "}
+            {errors.api && <p className="errorText">{errors.api}</p>}{" "}
             {isEditing ? (
               <>
+                {" "}
                 <button className="save" onClick={handleSave}>
-                  Guardar Cambios
-                </button>
+                  Guardar Cambios{" "}
+                </button>{" "}
                 <button className="cancel" onClick={handleCancel}>
-                  Cancelar
-                </button>
+                  Cancelar{" "}
+                </button>{" "}
               </>
             ) : (
               <button className="modify" onClick={handleModify}>
-                Modificar
+                Modificar{" "}
               </button>
-            )}
-          </div>
-        </div>
-      </div>
+            )}{" "}
+          </div>{" "}
+        </div>{" "}
+      </div>{" "}
     </>
   );
 };

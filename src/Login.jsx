@@ -4,17 +4,31 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./css/login.css";
 
+const styles = {
+  notificationBase: {
+    marginBottom: "15px",
+    fontWeight: "500",
+    textAlign: "center",
+    width: "100%",
+  },
+  error: {
+    color: "#e04655ff", 
+  },
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const [DNI, setDNI] = useState("");
   const [password, setPassword] = useState("");
+
+  const [notification, setNotification] = useState({ message: "", type: "" });
 
   useEffect(() => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
         const payload = jwtDecode(token);
-        if (payload.role == "jefe") {
+        if (payload.role === "jefe") {
           navigate("/main");
         } else {
           navigate("/mainU");
@@ -29,6 +43,7 @@ const Login = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    setNotification({ message: "", type: "" });
 
     try {
       const res = await axios.post("http://localhost:3001/api/login", {
@@ -38,11 +53,16 @@ const Login = () => {
       const token = res.data.token;
       
       if (!token) {
-        return alert("DNI o contraseña incorrectos.");
+        setNotification({ 
+          message: "DNI o contraseña incorrectos.", 
+          type: "error" 
+        });
+        return;
       }
+
       localStorage.setItem("token", token);
       const payload = jwtDecode(token);
-      if (payload.role == "jefe") {
+      if (payload.role === "jefe") {
         navigate("/main");
       } else {
         navigate("/mainU");
@@ -50,9 +70,18 @@ const Login = () => {
 
     } catch (err) {
       console.error("Error al iniciar sesión:", err.response?.data?.message || err.message);
-      alert("DNI o contraseña incorrectos.");
+      
+      const errorMsg = err.response?.data?.message || "DNI o contraseña incorrectos.";
+      setNotification({ message: errorMsg, type: "error" });
     }
   };
+
+  let notificationStyle = styles.notificationBase;
+  if (notification.type === "success") {
+    notificationStyle = { ...notificationStyle, ...styles.success };
+  } else if (notification.type === "error") {
+    notificationStyle = { ...notificationStyle, ...styles.error };
+  }
 
   return (
     <div className="mainCont">
@@ -78,6 +107,13 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)} 
           required
         />
+        
+        {notification.message && (
+          <div style={notificationStyle}>
+            {notification.message}
+          </div>
+        )}
+
         <button className="loginBtn" type="submit">
           Ingresar
         </button>

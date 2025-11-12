@@ -1,16 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./css/changePwd.css";
+import "./css/changePwd.css"; 
 import Header from "./Header";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+
+// Estilos de notificación (simplificados, solo texto)
+const styles = {
+  notificationBase: {
+    marginBottom: "15px",
+    fontWeight: "500",
+    textAlign: "center",
+    width: "100%",
+  },
+  success: {
+    color: "#36da5cff", 
+  },
+  error: {
+    color: "#e04655ff", 
+  },
+};
 
 const ChangePassword = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [oldPwd, setOldPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
-  const [error, setError] = useState(null);
+  
+  const [notification, setNotification] = useState({ message: "", type: "" });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -19,14 +36,20 @@ const ChangePassword = () => {
         const decoded = jwtDecode(token);
         setUserData(decoded);
       } catch (e) {
-        console.log("Invalido o expiro");
+        console.log("Token invalido o expiro");
         localStorage.removeItem("token");
-        navigate("/");
+        setNotification({ 
+          message: "Su sesión es inválida o ha expirado. No podrá cambiar su contraseña.", 
+          type: "error" 
+        });
       }
     } else {
-      navigate("/");
+      setNotification({ 
+        message: "No se encontró sesión de usuario. No podrá cambiar su contraseña.", 
+        type: "error" 
+      });
     }
-  }, [navigate]);
+  }, []); 
 
   const Return = () => {
     if (userData && userData.role === "jefe") {
@@ -38,47 +61,88 @@ const ChangePassword = () => {
 
   const handleChangePwd = async (event) => {
     event.preventDefault();
-    setError(null);
+    setNotification({ message: "", type: "" });
 
-    if (!userData || !oldPwd || !newPwd) {
-      setError("Por favor, complete todos los campos.");
+    if (!userData) {
+      setNotification({
+        message: "Error: No se pudo verificar la identidad del usuario. Inicie sesión de nuevo.",
+        type: "error",
+      });
+      return;
+    }
+    
+    if (!oldPwd || !newPwd) {
+      setNotification({
+        message: "Por favor, complete todos los campos.",
+        type: "error",
+      });
       return;
     }
 
     try {
-      const res = await axios.post("http://localhost:3001/api/changePwd", {
-        oldPwd: oldPwd,
-        newPwd: newPwd,
-        DNI: userData.DNI,
-      });
-      if (res.data.message === "Contraseña cambiada correctamente") {
-        alert("Actualización completa");
-        
-        if (userData.role === "jefe") {
-          navigate("/main");
-        } else {
-          navigate("/mainU");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setNotification({
+          message: "Error de autenticación. No se encontró token.",
+          type: "error",
+        });
+        return;
+      }
+
+      const headers = {
+        Authorization: token,
+      };
+
+      const res = await axios.post(
+        "http://localhost:3001/api/changePwd",
+        {
+          oldPwd: oldPwd,
+          newPwd: newPwd,
+          DNI: userData.DNI,
+        },
+        {
+          headers: headers,
         }
+      );
+
+      if (res.data.message === "Contraseña cambiada correctamente") {
+        setNotification({
+          message: "Actualización completa. Redirigiendo...",
+          type: "success",
+        });
+        setTimeout(() => {
+          if (userData.role === "jefe") {
+            navigate("/main");
+          } else {
+            navigate("/mainU");
+          }
+        }, 2000);
       }
     } catch (err) {
       const errorMsg =
         err.response?.data?.message || "Error al cambiar la contraseña.";
       console.error(errorMsg);
-      setError(errorMsg);
+      setNotification({ message: errorMsg, type: "error" });
     }
   };
 
+  let notificationStyle = styles.notificationBase;
+  if (notification.type === "success") {
+    notificationStyle = { ...notificationStyle, ...styles.success };
+  } else if (notification.type === "error") {
+    notificationStyle = { ...notificationStyle, ...styles.error };
+  }
+
   return (
     <>
-      <Header />
+      <Header />{" "}
       <div className="ChangePwdMC">
+        {" "}
         <button className="return" onClick={Return}>
-          Volver
-        </button>
+          Volver{" "}
+        </button>{" "}
         <form className="changePwdForm" onSubmit={handleChangePwd}>
-          <h2>Cambio de contraseña</h2>
-
-          <p>Contraseña actual</p>
+          <h2>Cambio de contraseña</h2> <p>Contraseña actual</p>{" "}
           <input
             type="password"
             name="CurrentPassword"
@@ -88,24 +152,28 @@ const ChangePassword = () => {
             className="changePwdInput"
             required
           />
-
-          <p>Nueva Contraseña</p>
+          <p>Nueva Contraseña</p>{" "}
           <input
-            type="password"
-            name="NewPassword"
+            type= "password"
+            name= "NewPassword"
             value={newPwd}
             onChange={(e) => setNewPwd(e.target.value)}
             placeholder="************"
             className="changePwdInput"
             required
           />
-          {error && <p className="errorText">{error}</p>}
-
+          
+          {notification.message && (
+            <div style={notificationStyle}>
+              {notification.message}
+            </div>
+          )}
+          
           <button className="changePwdBtn" type="submit">
-            Cambiar contraseña
-          </button>
-        </form>
-      </div>
+            Cambiar contraseña{" "}
+          </button>{" "}
+        </form>{" "}
+      </div>{" "}
     </>
   );
 };

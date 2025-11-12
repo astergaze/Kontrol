@@ -17,43 +17,113 @@ const MaterialRequest = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get(`${API_URL}/viewmaterialrequest`);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+          navigate("/");
+          return;
+        }
+        const headers = {
+          Authorization: token,
+        };
+
+        const response = await axios.get(`${API_URL}/viewmaterialrequest`, {
+          headers: headers,
+        });
         setRequests(response.data);
       } catch (err) {
         console.error("Error al traer los datos con axios:", err);
+        if (
+          err.response &&
+          (err.response.status === 401 || err.response.status === 403)
+        ) {
+          alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+          localStorage.removeItem("token");
+          navigate("/");
+        } else {
+          alert("No se pudieron cargar las solicitudes de material.");
+        }
       }
     };
 
     fetchRequests();
-  }, []);
+  }, [navigate]); 
 
   const handleAccept = async (id) => {
     try {
-      await axios.post(`${API_URL}/Acept_MaterialRequest`, {
-        id: id,
-        newestado: "Aprobada",
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
+
+      await axios.post(
+        `${API_URL}/Acept_MaterialRequest`,
+        {
+          id: id,
+          newestado: "Aprobada",
+        },
+        { headers: headers }
+      );
 
       setRequests((currentRequests) =>
         currentRequests.filter((req) => req.id !== id)
       );
     } catch (err) {
       console.error("Error al aceptar la solicitud:", err);
+      if (
+        err.response &&
+        (err.response.status === 401 || err.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("Error al aceptar la solicitud.");
+      }
     }
   };
 
   const handleDecline = async (id) => {
     try {
-      await axios.post(`${API_URL}/Acept_MaterialRequest`, {
-        id: id, 
-        newestado: "Rechazada",
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
+
+      await axios.post(
+        `${API_URL}/Acept_MaterialRequest`,
+        {
+          id: id,
+          newestado: "Rechazada",
+        },
+        { headers: headers }
+      ); 
 
       setRequests((currentRequests) =>
         currentRequests.filter((req) => req.id !== id)
       );
     } catch (err) {
       console.error("Error al rechazar la solicitud:", err);
+      if (
+        err.response &&
+        (err.response.status === 401 || err.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("Error al rechazar la solicitud.");
+      }
     }
   };
 

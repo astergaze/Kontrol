@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios'; 
+import axios from "axios";
 import Header from "./Header";
 import "./css/ModifyPriceList.css";
 
@@ -15,13 +15,27 @@ const ModifyPriceList = () => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const [addForm, setAddForm] = useState({ nombre: "", precio: "" });
-  const [modifyForm, setModifyForm] = useState({ id: '', nombre: "", precio: "" });
+  const [modifyForm, setModifyForm] = useState({
+    id: "",
+    nombre: "",
+    precio: "",
+  });
 
   const fetchLists = async () => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
+
       const [paperRes, termRes] = await Promise.all([
-        axios.get(`${API_URL}/papers`),
-        axios.get(`${API_URL}/terminations`)
+        axios.get(`${API_URL}/papers`, { headers: headers }),
+        axios.get(`${API_URL}/terminations`, { headers: headers }),
       ]);
 
       const papersData = paperRes.data;
@@ -31,29 +45,36 @@ const ModifyPriceList = () => {
       setTerminationTypes(termData);
 
       // Selecciona el primer item de la lista activa (o null si esta vacia)
-      if (activeTab === 'papel') {
+      if (activeTab === "papel") {
         setSelectedItem(papersData[0] || null);
       } else {
         setSelectedItem(termData[0] || null);
       }
-
     } catch (error) {
       console.error("Error cargando las listas:", error);
-      // Opcional: Mostrar un mensaje de error al usuario
-      // const message = error.response?.data?.message || "Error al cargar datos del servidor.";
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("No se pudieron cargar los datos del servidor.");
+      }
+      // ----------------------------------------
     }
   };
 
   useEffect(() => {
     fetchLists();
-  }, []); // El array vacío asegura que solo se ejecute una vez al montar
+  }, [navigate]);
 
   useEffect(() => {
     if (selectedItem) {
       setModifyForm(selectedItem);
     } else {
-      // Resetea el formulario si no hay nada seleccionado
-      setModifyForm({ id: '', nombre: "", precio: "" });
+      setModifyForm({ id: "", nombre: "", precio: "" });
     }
   }, [selectedItem]);
 
@@ -67,9 +88,8 @@ const ModifyPriceList = () => {
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
-    setAddForm({ nombre: "", precio: "" }); // Resetea formulario de añadir
+    setAddForm({ nombre: "", precio: "" });
 
-    // Selecciona el primer item de la nueva pestaña
     if (tabName === "papel") {
       setSelectedItem(paperTypes[0] || null);
     } else {
@@ -78,302 +98,406 @@ const ModifyPriceList = () => {
   };
 
   const handleAdd = async (e) => {
-    e.preventDefault(); 
-    
-    // El endpoint depende de la pestaña activa
-    const endpoint = activeTab === "papel" ? `${API_URL}/createPaper` : `${API_URL}/createTerminacion`;
+    e.preventDefault();
+    const endpoint =
+      activeTab === "papel"
+        ? `${API_URL}/createPaper`
+        : `${API_URL}/createTerminacion`;
 
     try {
-      const res = await axios.post(endpoint, {
-        newName: addForm.nombre,
-        newPrice: addForm.precio
-      });
-      
-      setAddForm({ nombre: "", precio: "" }); // Limpia el formulario
-      await fetchLists(); // Recarga la lista para mostrar el nuevo ítem
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
 
+      const res = await axios.post(
+        endpoint,
+        {
+          newName: addForm.nombre,
+          newPrice: addForm.precio,
+        },
+        { headers: headers }
+      );
+
+      setAddForm({ nombre: "", precio: "" });
+      await fetchLists();
     } catch (error) {
       console.error(`Error añadiendo a ${activeTab}:`, error);
-      // const message = error.response?.data?.message || error.message || "Error al añadir";
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("Error al añadir el ítem.");
+      }
     }
   };
 
   const handleModify = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (!modifyForm || !modifyForm.id) {
-      return; // No hacer nada si no hay un item seleccionado
+      return;
     }
 
-    const endpoint = activeTab === "papel" ? `${API_URL}/updatePaper` : `${API_URL}/updateTerminacion`;
+    const endpoint =
+      activeTab === "papel"
+        ? `${API_URL}/updatePaper`
+        : `${API_URL}/updateTerminacion`;
 
     try {
-      const res = await axios.post(endpoint, {
-        id: modifyForm.id,           
-        newName: modifyForm.nombre,  
-        newPrice: modifyForm.precio  
-      });
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
 
-      await fetchLists(); // Recarga la lista para mostrar los cambios
+      const res = await axios.post(
+        endpoint,
+        {
+          id: modifyForm.id,
+          newName: modifyForm.nombre,
+          newPrice: modifyForm.precio,
+        },
+        { headers: headers }
+      );
 
+      await fetchLists();
     } catch (error) {
       console.error(`Error modificando en ${activeTab}:`, error);
-      // const message = error.response?.data?.message || error.message || "Error al modificar";
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("Error al modificar el ítem.");
+      }
     }
   };
 
   const handleDelete = async () => {
     if (!selectedItem || !selectedItem.id) {
-      return; // No hacer nada si no hay ítem seleccionado
+      return;
     }
 
-    const endpoint = activeTab === "papel" 
-      ? `${API_URL}/paper/${selectedItem.id}` 
-      : `${API_URL}/termination/${selectedItem.id}`;
+    const endpoint =
+      activeTab === "papel"
+        ? `${API_URL}/paper/${selectedItem.id}`
+        : `${API_URL}/termination/${selectedItem.id}`;
 
     try {
-      const res = await axios.delete(endpoint);
-      await fetchLists(); // Recarga la lista para quitar el item eliminado
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Error de autenticación. Por favor, vuelva a iniciar sesión.");
+        navigate("/");
+        return;
+      }
+      const headers = {
+        Authorization: token,
+      };
 
+      const res = await axios.delete(endpoint, { headers: headers });
+      await fetchLists();
     } catch (error) {
       console.error(`Error eliminando de ${activeTab}:`, error);
-      // const message = error.response?.data?.message || error.message || "Error al eliminar";
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        alert("Su sesión ha expirado. Por favor, inicie sesión nuevamente.");
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        alert("Error al eliminar el ítem.");
+      }
     }
   };
 
-  return (<>
-    <Header />
-    <div className="modify-page-container">
-      <button className="returnf" onClick={Return}>
-        Volver
-      </button>
+  return (
+    <>
+      <Header />
+      <div className="modify-page-container">
+        <button className="returnf" onClick={Return}>
+          Volver
+        </button>
 
-      <div className="modify-main-container">
-        <div className="modify-title">Modificar</div>
+        <div className="modify-main-container">
+          <div className="modify-title">Modificar</div>
 
-        <div className="modify-content-layout">
-          {/* --- PANEL IZQUIERDO (Formularios) --- */}
-          <div className="left-panel">
-            <div className="tab-container">
-              <button
-                className={`tab-btn ${activeTab === "papel" ? "active" : ""}`}
-                onClick={() => handleTabClick("papel")} 
-              >
-                Tipo de papel
-              </button>
-              <button
-                className={`tab-btn ${activeTab === "terminacion" ? "active" : ""}`}
-                onClick={() => handleTabClick("terminacion")}
-              >
-                Terminación
-              </button>
+          <div className="modify-content-layout">
+            {/* --- PANEL IZQUIERDO (Formularios) --- */}
+            <div className="left-panel">
+              <div className="tab-container">
+                <button
+                  className={`tab-btn ${activeTab === "papel" ? "active" : ""}`}
+                  onClick={() => handleTabClick("papel")}
+                >
+                  Tipo de papel
+                </button>
+                <button
+                  className={`tab-btn ${
+                    activeTab === "terminacion" ? "active" : ""
+                  }`}
+                  onClick={() => handleTabClick("terminacion")}
+                >
+                  Terminación
+                </button>
+              </div>
+
+              {/* Contenido de la pestaña "Tipo de papel" */}
+              {activeTab === "papel" && (
+                <div className="tab-content">
+                  {/* Sección AGREGAR (Papel) */}
+                  <div className="action-section">
+                    <h3>Agregar</h3>
+                    <form className="action-form">
+                      <div className="form-group">
+                        <label>Ingresar Nombre</label>
+                        <input
+                          type="text"
+                          value={addForm.nombre}
+                          onChange={(e) =>
+                            setAddForm({ ...addForm, nombre: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Ingresar Precio</label>
+                        <input
+                          type="number"
+                          value={addForm.precio}
+                          onChange={(e) =>
+                            setAddForm({ ...addForm, precio: e.target.value })
+                          }
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-add"
+                        onClick={handleAdd}
+                      >
+                        Añadir
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Sección MODIFICAR (Papel) */}
+                  <div className="action-section">
+                    <h3>Modificar</h3>
+                    <form className="action-form">
+                      <div className="form-group">
+                        <label>Modificar Nombre</label>
+                        <input
+                          type="text"
+                          value={modifyForm.nombre}
+                          onChange={(e) =>
+                            setModifyForm({
+                              ...modifyForm,
+                              nombre: e.target.value,
+                            })
+                          }
+                          disabled={!selectedItem}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Modificar Precio</label>
+                        <input
+                          type="number"
+                          value={modifyForm.precio}
+                          onChange={(e) =>
+                            setModifyForm({
+                              ...modifyForm,
+                              precio: e.target.value,
+                            })
+                          }
+                          disabled={!selectedItem}
+                        />
+                      </div>
+                      <div className="modify-buttons">
+                        <button
+                          type="button"
+                          className="btn btn-accept"
+                          disabled={!selectedItem}
+                          onClick={handleModify}
+                        >
+                          Aceptar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleDelete}
+                          className="btn btn-delete"
+                          disabled={!selectedItem}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* Contenido de la pestaña "Terminación" */}
+              {activeTab === "terminacion" && (
+                <div className="tab-content">
+                  {/* Sección AGREGAR (Terminación) */}
+                  <div className="action-section">
+                    <h3>Agregar</h3>
+                    <form className="action-form">
+                      <div className="form-group">
+                        <label>Ingresar Nombre</label>
+                        <input
+                          type="text"
+                          value={addForm.nombre}
+                          onChange={(e) =>
+                            setAddForm({ ...addForm, nombre: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Ingresar Precio</label>
+                        <input
+                          type="number"
+                          value={addForm.precio}
+                          onChange={(e) =>
+                            setAddForm({ ...addForm, precio: e.target.value })
+                          }
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-add"
+                        onClick={handleAdd}
+                      >
+                        Añadir
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Sección MODIFICAR (Terminación) */}
+                  <div className="action-section">
+                    <h3>Modificar</h3>
+                    <form className="action-form">
+                      <div className="form-group">
+                        <label>Modificar Nombre</label>
+                        <input
+                          type="text"
+                          value={modifyForm.nombre}
+                          onChange={(e) =>
+                            setModifyForm({
+                              ...modifyForm,
+                              nombre: e.target.value,
+                            })
+                          }
+                          disabled={!selectedItem}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Modificar Precio</label>
+                        <input
+                          type="number"
+                          value={modifyForm.precio}
+                          onChange={(e) =>
+                            setModifyForm({
+                              ...modifyForm,
+                              precio: e.target.value,
+                            })
+                          }
+                          disabled={!selectedItem}
+                        />
+                      </div>
+                      <div className="modify-buttons">
+                        <button
+                          type="button"
+                          className="btn btn-accept"
+                          disabled={!selectedItem}
+                          onClick={handleModify}
+                        >
+                          Aceptar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleDelete}
+                          className="btn btn-delete"
+                          disabled={!selectedItem}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Contenido de la pestaña "Tipo de papel" */}
-            {activeTab === "papel" && (
-              <div className="tab-content">
-                {/* Sección AGREGAR (Papel) */}
-                <div className="action-section">
-                  <h3>Agregar</h3>
-                  <form className="action-form">
-                    <div className="form-group">
-                      <label>Ingresar Nombre</label>
-                      <input
-                        type="text"
-                        value={addForm.nombre}
-                        onChange={(e) => setAddForm({...addForm, nombre: e.target.value})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Ingresar Precio</label>
-                      <input
-                        type="number"
-                        value={addForm.precio}
-                        onChange={(e) => setAddForm({...addForm, precio: e.target.value})}
-                      />
-                    </div>
-                    <button 
-                      type="button" 
-                      className="btn btn-add" 
-                      onClick={handleAdd}
-                    >
-                      Añadir
-                    </button>
-                  </form>
+            {/* --- PANEL DERECHO (Listas) --- */}
+            <div className="right-panel">
+              {activeTab === "papel" && (
+                <div className="list-display">
+                  <div className="list-header">
+                    <span>Tipo De Papel</span>
+                    <span>Precio</span>
+                  </div>
+                  <ul className="price-list">
+                    {paperTypes.map((item) => (
+                      <li
+                        key={item.id}
+                        className={`list-item ${
+                          selectedItem && selectedItem.id === item.id
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() => handleSelectItem(item)}
+                      >
+                        <span>-{item.nombre}</span>
+                        <span>${item.precio}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                {/* Sección MODIFICAR (Papel) */}
-                <div className="action-section">
-                  <h3>Modificar</h3>
-                  <form className="action-form">
-                    <div className="form-group">
-                      <label>Modificar Nombre</label>
-                      <input
-                        type="text"
-                        value={modifyForm.nombre}
-                        onChange={(e) => setModifyForm({...modifyForm, nombre: e.target.value})}
-                        disabled={!selectedItem}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Modificar Precio</label>
-                      <input
-                        type="number"
-                        value={modifyForm.precio}
-                        onChange={(e) => setModifyForm({...modifyForm, precio: e.target.value})}
-                        disabled={!selectedItem}
-                      />
-                    </div>
-                    <div className="modify-buttons">
-                      <button 
-                        type="button" 
-                        className="btn btn-accept" 
-                        disabled={!selectedItem}
-                        onClick={handleModify}
+              {activeTab === "terminacion" && (
+                <div className="list-display">
+                  <div className="list-header">
+                    <span>Terminación</span>
+                    <span>Precio</span>
+                  </div>
+                  <ul className="price-list">
+                    {terminationTypes.map((item) => (
+                      <li
+                        key={item.id}
+                        className={`list-item ${
+                          selectedItem && selectedItem.id === item.id
+                            ? "selected"
+                            : ""
+                        }`}
+                        onClick={() => handleSelectItem(item)}
                       >
-                        Aceptar
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={handleDelete} 
-                        className="btn btn-delete" 
-                        disabled={!selectedItem}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </form>
+                        <span>{item.nombre}</span>
+                        <span>${item.precio}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
-            
-            {/* Contenido de la pestaña "Terminación" */}
-            {activeTab === "terminacion" && (
-              <div className="tab-content">
-                {/* Sección AGREGAR (Terminación) */}
-                <div className="action-section">
-                  <h3>Agregar</h3>
-                  <form className="action-form">
-                    <div className="form-group">
-                      <label>Ingresar Nombre</label>
-                      <input
-                        type="text"
-                        value={addForm.nombre}
-                        onChange={(e) => setAddForm({...addForm, nombre: e.target.value})}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Ingresar Precio</label>
-                      <input
-                        type="number"
-                        value={addForm.precio}
-                        onChange={(e) => setAddForm({...addForm, precio: e.target.value})}
-                      />
-                    </div>
-                    <button 
-                      type="button" 
-                      className="btn btn-add" 
-                      onClick={handleAdd}
-                    >
-                      Añadir
-                    </button>
-                  </form>
-                </div>
-                
-                {/* Sección MODIFICAR (Terminación) */}
-                <div className="action-section">
-                  <h3>Modificar</h3>
-                  <form className="action-form">
-                    <div className="form-group">
-                      <label>Modificar Nombre</label>
-                      <input
-                        type="text"
-                        value={modifyForm.nombre}
-                        onChange={(e) => setModifyForm({...modifyForm, nombre: e.target.value})}
-                        disabled={!selectedItem}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Modificar Precio</label>
-                      <input
-                        type="number"
-                        value={modifyForm.precio}
-                        onChange={(e) => setModifyForm({...modifyForm, precio: e.target.value})}
-                        disabled={!selectedItem}
-                      />
-                    </div>
-                    <div className="modify-buttons">
-                      <button 
-                        type="button" 
-                        className="btn btn-accept" 
-                        disabled={!selectedItem}
-                        onClick={handleModify}
-                      >
-                        Aceptar
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={handleDelete} 
-                        className="btn btn-delete" 
-                        disabled={!selectedItem}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* --- PANEL DERECHO (Listas) --- */}
-          <div className="right-panel">
-            
-            {activeTab === 'papel' && (
-              <div className="list-display">
-                <div className="list-header">
-                  <span>Tipo De Papel</span>
-                  <span>Precio</span>
-                </div>
-                <ul className="price-list">
-                  {paperTypes.map((item) => (
-                    <li
-                      key={item.id} 
-                      className={`list-item ${selectedItem && selectedItem.id === item.id ? "selected" : ""}`}
-                      onClick={() => handleSelectItem(item)}
-                    >
-                      <span>-{item.nombre}</span>
-                      <span>${item.precio}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {activeTab === 'terminacion' && (
-              <div className="list-display">
-                <div className="list-header">
-                  <span>Terminación</span>
-                  <span>Precio</span>
-                </div>
-                <ul className="price-list">
-                  {terminationTypes.map((item) => (
-                    <li
-                      key={item.id}
-                      className={`list-item ${selectedItem && selectedItem.id === item.id ? "selected" : ""}`}
-                      onClick={() => handleSelectItem(item)}
-                    >
-                      <span>{item.nombre}</span> 
-                      <span>${item.precio}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
