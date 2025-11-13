@@ -70,6 +70,7 @@ const Header = () => {
             <span className="chat">
               {" "}
               <img
+                S
                 src="https://i.imgur.com/mwR5HzO.png"
                 alt="logo chat"
                 onClick={handleChat}
