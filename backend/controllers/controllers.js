@@ -14,6 +14,8 @@ const {
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const SECRET = "El Psy Kongroo"; //Luego mover a un .env
+const { Op } = require("sequelize");
+const sequelize = require("../config/db"); // Necesario para 'sequelize.literal'
 
 const CreateTest = async () => {
   try {
@@ -60,7 +62,7 @@ const CreateTest = async () => {
         envio: "Retira",
         documento: "Fact",
         estado: "En Proceso",
-        clienteId: cliente.id, 
+        clienteId: cliente.id,
       },
     });
 
@@ -72,7 +74,7 @@ const CreateTest = async () => {
       defaults: {
         material: "Resma de papel A4 - 500 Hojas",
         estado: "Pendiente",
-        usuarioId: user.id,     // Asociada al usuario Bodoque
+        usuarioId: user.id, // Asociada al usuario Bodoque
         ordenTrabajoId: ot.id, // Asociada a la OT de Tulio
       },
     });
@@ -85,7 +87,7 @@ const CreateTest = async () => {
       where: { material: "Tinta Negra HP - Modelo 664" },
       defaults: {
         material: "Tinta Negra HP - Modelo 664",
-        estado: "Pendiente",   
+        estado: "Pendiente",
         usuarioId: user.id,
         ordenTrabajoId: ot.id,
       },
@@ -94,7 +96,6 @@ const CreateTest = async () => {
     if (sol2Created) {
       console.log("Solicitud de material 2 (Aprobada) creada.");
     }
-
   } catch (error) {
     console.error("Error al crear los datos de prueba:", error);
   }
@@ -289,7 +290,7 @@ const UpdatePriceAndName_Terminacion = async (req, res) => {
       });
     }
 
-    const terminacion = await TipoTerminacion.findByPk(id); 
+    const terminacion = await TipoTerminacion.findByPk(id);
 
     if (!terminacion) {
       return res.status(404).json({ message: "Terminación no encontrada" });
@@ -429,7 +430,7 @@ const GetAll_MaterialRequest = async (req, res) => {
 const Acept_or_decline_MaterialRequest = async (req, res) => {
   try {
     const { id, newestado } = req.body;
-    const materialResponse = await SolicitudMaterial.findByPk(id); 
+    const materialResponse = await SolicitudMaterial.findByPk(id);
 
     if (!materialResponse) {
       return res
@@ -445,6 +446,111 @@ const Acept_or_decline_MaterialRequest = async (req, res) => {
     console.error("Error al aceptar MaterialRequest", error);
 
     res.status(500).json({ message: "Error al actualizar la solicitud" });
+  }
+};
+// Devuelve todos los usuarios excepto el actual, para iniciar chats.
+const GetMyChats = async (req, res) => {
+  try {
+    const userId = req.user.id; // Obtenido del middleware isAuth
+
+    // Esto devuelve todos los usuarios menos el usuario actual
+    const usuarios = await Usuario.findAll({
+      where: {
+        id: {
+          [Op.ne]: userId, // [Op.ne] significa "no es igual"
+        },
+      },
+      attributes: ["id", "nombre", "apellido", "role"], // Solo envía datos seguros
+    });
+
+    res.status(200).json(usuarios);
+  } catch (error) {
+    console.error("Error al obtener la lista de chats/usuarios:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+//Encuentra o crea un chat 1-a-1 entre el usuario logueado y 'otherUserId'.
+const FindOrCreateChat = async (req, res) => {
+  const selfUserId = req.user.id;
+  const { otherUserId } = req.body;
+
+  if (!otherUserId) {
+    return res.status(400).json({ message: "Falta otherUserId" });
+  }
+
+  try {
+    // Buscar chats que contengan a ambos usuarios
+    const chats = await Chat.findAll({
+      include: [
+        {
+          model: Usuario,
+          where: { id: { [Op.in]: [selfUserId, otherUserId] } },
+          attributes: [], // No necesitamos los datos del usuario aca
+          through: { attributes: [] }, // No necesitamos la tabla de unión
+        },
+      ],
+      group: ["Chat.id"],
+      // Esto nos da chats que tienen a estos dos usuarios
+      having: sequelize.literal(`COUNT(DISTINCT "Usuarios"."id") = 2`),
+    });
+
+    // Verificar si alguno de esos chats es solo de 2 personas
+    if (chats.length > 0) {
+      for (const chat of chats) {
+        const participantCount = await chat.countUsuarios();
+
+        if (participantCount === 2) {
+          return res.status(200).json({ chatId: chat.id });
+        }
+      }
+    }
+
+    // Si no se encontró un chat 1-a-1 exclusivo, crear uno nuevo
+    const newChat = await Chat.create();
+
+    // Asociar a ambos usuarios al nuevo chat
+    await newChat.addUsuarios([selfUserId, otherUserId]);
+
+    res.status(201).json({ chatId: newChat.id });
+  } catch (error) {
+    console.error("Error al encontrar o crear chat:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+//Devuelve el historial de mensajes para un ID de chat específico.
+const GetChatMessages = async (req, res) => {
+  try {
+    const chatId = req.params.id;
+    const userId = req.user.id;
+
+    // Comprobación de seguridad
+    const chat = await Chat.findByPk(chatId);
+    if (!chat) {
+      return res.status(404).json({ message: "Chat no encontrado" });
+    }
+    const isParticipant = await chat.hasUsuario(userId); // Verifica N:M
+    if (!isParticipant) {
+      return res
+        .status(403)
+        .json({ message: "No autorizado para ver este chat" });
+    }
+
+    const messages = await Mensaje.findAll({
+      where: { chatId: chatId },
+      include: {
+        model: Usuario,
+        as: "remitente",
+        attributes: ["id", "nombre", "apellido"],
+      },
+      order: [["createdAt", "ASC"]], // Mensajes más antiguos primero
+    });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error al obtener mensajes:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
@@ -464,4 +570,7 @@ module.exports = {
   Delete_Terminacion,
   GetAll_MaterialRequest,
   Acept_or_decline_MaterialRequest,
+  GetMyChats,
+  FindOrCreateChat,
+  GetChatMessages,
 };

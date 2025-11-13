@@ -3,6 +3,8 @@ const cors = require("cors");
 const sequelize = require("./config/db");
 const app = express();
 const port = 3001;
+const http = require("http");
+const { Server } = require("socket.io");
 
 const {
   SignUp,
@@ -20,11 +22,29 @@ const {
   Delete_Terminacion,
   GetAll_MaterialRequest,
   Acept_or_decline_MaterialRequest,
+  GetMyChats,
+  FindOrCreateChat,
+  GetChatMessages,
 } = require("./controllers/controllers");
+
 const isAuth = require("./middlewares/isAuth");
+const initializeSocket = require("./socket/socketManager");
+
+// setear server http
+const server = http.createServer(app);
+
+// le ponemos Socket.IO al servidor HTTP
+const io = new Server(server, {
+  cors: {
+    origin: "*", // O restringir la URL de React/Electron, quizas despues
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(cors());
 app.use(express.json());
+
+initializeSocket(io);
 
 app.post("/api/hello", (req, res) => {
   res.status(200).json({ message: "Hola desde el backend!" });
@@ -47,7 +67,12 @@ app.post(
   isAuth,
   Acept_or_decline_MaterialRequest
 );
-app.listen(port, () => {
+app.get("/api/my-chats", isAuth, GetMyChats);
+app.post("/api/chat/find-or-create", isAuth, FindOrCreateChat);
+app.get("/api/chat/:id/messages", isAuth, GetChatMessages);
+
+// Inicializar el servidor
+server.listen(port, () => {
   sequelize
     .sync({ force: false })
     .then(() => {
@@ -55,7 +80,9 @@ app.listen(port, () => {
       return CreateTest();
     })
     .then(() => {
-      console.log(`Servidor backend corriendo en http://localhost:${port}`);
+      console.log(
+        `Servidor backend y Sockets corriendo en http://localhost:${port}`
+      );
     })
     .catch((err) => {
       console.error("Error al arrancar el servidor:", err);
