@@ -36,7 +36,7 @@ const MainPageAdmin = () => {
             <h2>Entrada del trabajo.</h2>
             <span className="entrada">
               <img
-                className="card-icon" 
+                className="card-icon small-icon" 
                 src="https://i.imgur.com/CTGB4c8.png"
                 alt="logo entrada de trabajo"
               />
@@ -60,7 +60,7 @@ const MainPageAdmin = () => {
               <h2>Generar cotizacion.</h2>
                 <span className="cotizacion">
                   <img
-                    className="logo2"
+                    className="card-icon small-icon"
                     src="https://i.imgur.com/TYS7bE4.png"
                     alt="logo generar cotizacion"
                   />
@@ -73,7 +73,7 @@ const MainPageAdmin = () => {
               <h2>Vista de trabajos.</h2>
                 <span className="vista">
                   <img
-                    className="logo5"
+                    className="card-icon"
                     src="https://i.imgur.com/Ftc3seh.png"
                     alt="logo vista de trabajos"
                   />
@@ -92,7 +92,7 @@ const MainPageAdmin = () => {
               <h2> Ver solicitudes de materiales. </h2>
                 <span className="solicitud">
                   <img
-                    className="logo3"
+                    className="card-icon small-icon"
                     src="https://i.imgur.com/DcYlKKD.png"
                     alt="logo ver solicitudes de materiales"
                   />
@@ -107,7 +107,7 @@ const MainPageAdmin = () => {
               <h2> Alta de Operadores.</h2>
                 <span className="azul">
                   <img
-                    className="logo6"
+                    className="card-icon"
                     src="https://i.imgur.com/fjRwV7z.png"
                     alt="logo alta de operadores"
                   />

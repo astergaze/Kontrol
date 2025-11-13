@@ -76,6 +76,7 @@ header {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .card:hover {
@@ -86,17 +87,13 @@ header {
   font-size: 16px;
   color: #00aaff;
   margin-bottom: 10px;
+  margin-top: 1rem;
 }
 
 .card p {
   font-size: 14px;
   color: #ccc;
   margin-bottom: 20px;
-}
-
-.card img {
-  width: 50px;
-  align-self: center;
 }
 
 /* Color destacado */
@@ -118,24 +115,16 @@ header {
   gap: 50px;
   margin-right: -80px;
 }
-img.logo1 {
-  transform: translateY(28px) scale(2) translateX(350px);
-}
-img.logo2{
-   transform: translateY(50px) scale(2) translateX(353px);
-}
-img.logo3{
-   transform: translateY(37px) scale(2) translateX(315px);
-}
-img.logo4{
-   transform: translateY(33px) scale(1) translateX(730px);
-}
-img.logo5{
-  transform: translateY(39px) scale(1) translateX(724px);
-}
-img.logo6{
- transform: translateY(30px) scale(1) translateX(705px);
+
+.card-icon{
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%) scale(1.5);
+  width: 2.5rem !important; 
+  height: auto;
 }
 
-
-
+.small-icon{
+  width: 4.5rem !important;
+}
