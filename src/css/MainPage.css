@@ -98,6 +98,6 @@
 }
 
 #small-icon{
-  width: 4.5rem;
+  width: 4.5rem !important;
   height: 3rem;
 }
