@@ -14,6 +14,7 @@ import QuotePDF from "./QuotePDF"
 import PriceListuser from "./PriceListuser"
 import Profile from "./Profile"
 import ViewJob from "./ViewJob"
+import RequestMaterials from "./Requestmaterials"
 
 import ModifyPriceList from "./ModifyPriceList"
 
@@ -48,6 +49,7 @@ const App = () => {
       <Route path="/ChangePwd" element={<ChangePassword />} />{" "}
       {/*Pagina del perfil de usuario (/me) */}
       <Route path="/Profile" element={<Profile />} />{" "}
+      <Route path="/RequestMaterials" element={<RequestMaterials />} />{" "}
     </Routes>
   );
 };

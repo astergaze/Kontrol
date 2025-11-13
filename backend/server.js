@@ -74,7 +74,7 @@ app.get("/api/chat/:id/messages", isAuth, GetChatMessages);
 // Inicializar el servidor
 server.listen(port, () => {
   sequelize
-    .sync({ force: false })
+    .sync({ force:false})
     .then(() => {
       console.log("Base de datos sincronizada.");
       return CreateTest();

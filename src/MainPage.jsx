@@ -8,6 +8,9 @@ const MainPage = () => {
  const handlePriceListUser = () => {
     navigate("/PriceListuser");
   };
+  const RequestMaterials = () =>{
+    navigate("/RequestMaterials");
+  }
   return (
     <>
       <Header />
@@ -48,7 +51,7 @@ const MainPage = () => {
                 terminación y personalizaciones finales).
               </p>
             </section>
-            <section className="card materialrequest">
+            <section className="card materialrequest" onClick={RequestMaterials}>
               <h2>
                 <span className="solicitud">
                   Solicitud de materiales.
