@@ -667,8 +667,9 @@ const getOrdenDetalle = async (req, res) => {
     const { id } = req.params;
     const orden = await OrdenTrabajo.findByPk(id, {
       include: [
-        { model: Cliente }, // Incluye los datos del cliente
-        { model: DetalleOrden }, // Incluye todos los items (detalles)
+        { model: Cliente }, 
+        { model: DetalleOrden },
+        { model: OrdenCotizacion }, // <--- Esta inclusión es la clave
       ],
     });
 
@@ -680,6 +681,84 @@ const getOrdenDetalle = async (req, res) => {
   } catch (error) {
     console.error("Error al obtener detalle de la orden:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+/**
+ * @route POST /api/cotizacion/crear
+ * @desc Crea o actualiza la cotización para una Orden de Trabajo.
+ * @access Privado
+ */
+const crearOActualizarCotizacion = async (req, res) => {
+  const {
+    ordenTrabajoId,
+    precioImpresion,
+    precioPersonalizacion,
+    precioTerminacion,
+    impuestos,
+    total,
+  } = req.body;
+
+  // Validar que el ID de la OT venga
+  if (!ordenTrabajoId) {
+    return res
+      .status(400)
+      .json({ message: "Se requiere el ID de la Orden de Trabajo." });
+  }
+
+  const t = await sequelize.transaction();
+
+  try {
+    // 1. Buscar la Orden de Trabajo y sus cotizaciones existentes
+    const orden = await OrdenTrabajo.findByPk(ordenTrabajoId, {
+      include: [OrdenCotizacion],
+      transaction: t,
+    });
+
+    if (!orden) {
+      await t.rollback();
+      return res
+        .status(404)
+        .json({ message: "Orden de trabajo no encontrada" });
+    }
+
+    // 2. Preparar los datos de la cotización
+    const cotizacionData = {
+      precioImpresion,
+      precioPersonalizacion,
+      precioTerminacion,
+      impuestos,
+      total,
+      clienteId: orden.clienteId, // Asocia la cotización también al cliente
+    };
+
+    let cotizacion;
+
+    // 3. Comprobar si ya existe una cotización para esta OT
+    // (Tu schema es M:M, pero para esta UI asumimos que solo hay 1)
+    if (orden.OrdenCotizacions && orden.OrdenCotizacions.length > 0) {
+      // Si existe, la actualiza
+      cotizacion = orden.OrdenCotizacions[0];
+      await cotizacion.update(cotizacionData, { transaction: t });
+    } else {
+      // Si no existe, la crea
+      cotizacion = await OrdenCotizacion.create(cotizacionData, {
+        transaction: t,
+      });
+      // Y la vincula a la Orden de Trabajo (usando el método M:M)
+      await orden.addOrdenCotizacion(cotizacion, { transaction: t });
+    }
+
+    // 4. Confirmar transacción
+    await t.commit();
+    res
+      .status(201)
+      .json({ message: "Cotización guardada con éxito", data: cotizacion });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error al crear/actualizar cotización:", error);
+    res
+      .status(500)
+      .json({ message: "Error interno del servidor", error: error.message });
   }
 };
 
@@ -706,4 +785,5 @@ module.exports = {
   crearOrdenTrabajo,
   getOrdenesResumen,
   getOrdenDetalle,
+  crearOActualizarCotizacion,
 };

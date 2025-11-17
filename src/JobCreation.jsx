@@ -36,7 +36,6 @@ const MainPage = () => {
       formato: "",
       colores: "",
       terminacion: "",
-      personalizacion: "",
     }))
   );
   // -----------------------------
@@ -388,23 +387,6 @@ const MainPage = () => {
                       value={items[i].terminacion}
                       onChange={(e) =>
                         handleItemChange(i, "terminacion", e.target.value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* Columna Personalizacion */}
-            <div className="col finishing">
-              <div className="col-header">Personalizacion:</div>
-              <div className="col-rows">
-                {items.map((_, i) => (
-                  <div key={i} className="row-cell">
-                    <input
-                      className="cell-input"
-                      value={items[i].personalizacion}
-                      onChange={(e) =>
-                        handleItemChange(i, "personalizacion", e.target.value)
                       }
                     />
                   </div>

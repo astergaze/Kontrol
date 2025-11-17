@@ -41,7 +41,7 @@ const App = () => {
       {/* Pagina de vista previa de trabajos*/}
       <Route path="/Quotation" element={<Quotation />} />{" "}
       {/*Pagina previa a la generacion del pdf */}
-      <Route path="/QuotePDF" element={<QuotePDF />} />{" "}
+      <Route path="/QuotePDF/:id" element={<QuotePDF />} />{" "}
       {/*Pagina de generacion del pdf */}
       <Route path="/PriceListuser" element={<PriceListuser />} />{" "}
       <Route path="/ModifyPrice" element={<ModifyPriceList />} />{" "}
