@@ -25,6 +25,9 @@ const {
   GetMyChats,
   FindOrCreateChat,
   GetChatMessages,
+  crearOrdenTrabajo,
+  getOrdenesResumen,
+  getOrdenDetalle,
 } = require("./controllers/controllers");
 
 const isAuth = require("./middlewares/isAuth");
@@ -70,11 +73,14 @@ app.post(
 app.get("/api/my-chats", isAuth, GetMyChats);
 app.post("/api/chat/find-or-create", isAuth, FindOrCreateChat);
 app.get("/api/chat/:id/messages", isAuth, GetChatMessages);
+app.post("/api/ot/crear", isAuth, crearOrdenTrabajo);
+app.get("/api/ot/lista", isAuth, getOrdenesResumen); 
+app.get("/api/ot/:id", isAuth, getOrdenDetalle);   
 
 // Inicializar el servidor
 server.listen(port, () => {
   sequelize
-    .sync({ force:false})
+    .sync({ force:true})
     .then(() => {
       console.log("Base de datos sincronizada.");
       return CreateTest();

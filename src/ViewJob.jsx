@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./css/ViewJob.css";
 import Header from "./Header";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios"; // Importar axios
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
+  const { id } = useParams();
 
+  const [userData, setUserData] = useState(null);
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Efecto para la autenticación
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -24,12 +30,70 @@ const MainPage = () => {
     }
   }, [navigate]);
 
+  // Efecto para cargar los datos del trabajo específico
+  useEffect(() => {
+    if (!id) return;
+    if (!userData) return;
+
+    const fetchJob = async () => {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/api/ot/${id}`, // URL completa
+          {
+            headers: {
+              Authorization: token, // <-- CORRECCIÓN: Enviar solo el token
+            },
+          }
+        );
+        setJob(response.data);
+      } catch (error) {
+        console.error("Error al cargar el trabajo:", error);
+        if (error.response && error.response.status === 404) {
+          alert("Trabajo no encontrado");
+        }
+        navigate("/PreViewJob");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [id, navigate, userData]);
+
   const Return = () => {
     navigate("/PreViewJob");
   };
 
-  if (!userData) {
-    return null;
+  const itemsParaMostrar = Array.from({ length: 10 }).map((_, i) => {
+    if (job && job.DetalleOrdens && job.DetalleOrdens[i]) {
+      return job.DetalleOrdens[i];
+    }
+    return { item: i + 1 };
+  });
+
+  if (!userData || loading) {
+    return (
+      <>
+        <Header />
+        <div className="container">Cargando...</div>
+      </>
+    );
+  }
+
+  if (!job) {
+    return (
+      <>
+        <Header />
+        <div className="container">
+          <button className="back-button action-button" onClick={Return}>
+            Volver
+          </button>
+          <p>No se pudieron cargar los datos del trabajo.</p>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -43,60 +107,88 @@ const MainPage = () => {
           <div className="left-col">
             <div className="field-row">
               <label>Razon social/cliente:</label>
-              <div className="value-display">Empresa S.A.</div>
+              <div className="value-display">
+                {job.Cliente?.nomClien || "N/A"}
+              </div>
             </div>
             <div className="field-row">
               <label>Resp:</label>
-              <div className="value-display">Juan Pérez</div>
+              <div className="value-display">
+                {job.Cliente?.responsable || "N/A"}
+              </div>
             </div>
             <div className="field-row">
               <label>Mail/Tel/Cel:</label>
-              <div className="value-display">juan@empresa.com / 11-1234-5678</div>
+              <div className="value-display">
+                {job.Cliente?.contacto || "N/A"}
+              </div>
             </div>
             <div className="field-row">
               <label>Dir:</label>
-              <div className="value-display">Av. Siempre Viva 123</div>
+              <div className="value-display">
+                {job.Cliente?.direccion || "N/A"}
+              </div>
             </div>
           </div>
           <div className="right-col">
             <div className="field-row">
               <label>O/T Nº:</label>
-              <div className="value-display">OT-2025-001</div>
+              <div className="value-display">{job.id}</div>
             </div>
             <div className="field-row">
               <label>Fecha:</label>
-              <div className="value-display">2025-11-03</div>
+              <div className="value-display">
+                {job.fechaIn
+                  ? new Date(job.fechaIn).toLocaleDateString()
+                  : "N/A"}
+              </div>
             </div>
             <div className="field-row">
               <label>F/Entrega:</label>
-              <div className="value-display">2025-11-10</div>
+              <div className="value-display">
+                {job.fechaFin
+                  ? new Date(job.fechaFin).toLocaleDateString()
+                  : "N/A"}
+              </div>
             </div>
             <div className="field-row">
               <label>Arch:</label>
-              <div className="value-display">Mail</div>
+              <div className="value-display">{job.archivo || "N/A"}</div>
             </div>
           </div>
         </section>
         <section className="items-area">
           <div className="items-columns">
-            {["IT", "Descripcion", "Originales", "Copias", "Papel", "Formato", "Colores", "Terminacion", "Personalizacion"].map((header, colIndex) => (
-              <div key={colIndex} className={`col ${header.toLowerCase()}`}>
-                <div className="col-header">{header}:</div>
+            {[
+              { key: "item", label: "IT", class: "it", small: true },
+              { key: "descripcion", label: "Descripcion", class: "description" },
+              {
+                key: "originales",
+                label: "Originales",
+                class: "originals",
+                small: true,
+              },
+              { key: "copias", label: "Copias", class: "copies", small: true },
+              { key: "papel", label: "Papel", class: "paper" },
+              { key: "formato", label: "Formato", class: "format", small: true },
+              { key: "colores", label: "Colores", class: "colors", small: true },
+              {
+                key: "terminacion",
+                label: "Terminacion",
+                class: "finishing",
+              },
+            ].map((header) => (
+              <div key={header.key} className={`col ${header.class}`}>
+                <div className="col-header">{header.label}:</div>
                 <div className="col-rows">
-                  {Array.from({ length: 10 }).map((_, i) => (
+                  {itemsParaMostrar.map((item, i) => (
                     <div key={i} className="row-cell">
-                      <span className={`cell-display ${["IT", "Originales", "Copias", "Formato", "Colores"].includes(header) ? "small" : ""}`}>
-                        {
-                          header === "IT" ? i + 1 :
-                          header === "Descripcion" ? `Descripción del ítem ${i + 1}` :
-                          header === "Originales" ? "2" :
-                          header === "Copias" ? "1" :
-                          header === "Papel" ? "Obra 90gr" :
-                          header === "Formato" ? "A4" :
-                          header === "Colores" ? "CMYK" :
-                          header === "Terminacion" ? "Encuadernado" :
-                          header === "Personalizacion" ? "Logo impreso" : ""
-                        }
+                      <span
+                        className={`cell-display ${
+                          header.small ? "small" : ""
+                        }`}
+                      >
+                        {item[header.key] || (header.key === "item" ? i + 1 : "")}
                       </span>
                     </div>
                   ))}
@@ -109,25 +201,27 @@ const MainPage = () => {
           <div className="left-controls">
             <div className="field-row priority">
               <label>Prioridad:</label>
-              <div className="value-display">A</div>
+              <div className="value-display">{job.prioridad || "N/A"}</div>
             </div>
             <div className="field-row">
               <label>Envío:</label>
-              <div className="value-display">Retira</div>
+              <div className="value-display">{job.envio || "N/A"}</div>
             </div>
             <div className="field-row">
               <label>Documento:</label>
-              <div className="value-display">Rem.</div>
+              <div className="value-display">{job.documento || "N/A"}</div>
             </div>
           </div>
           <div className="right-bottom">
             <div className="observations">
               <div className="value-display">
-                Cliente requiere entrega urgente. Revisar detalles técnicos antes de imprimir.
+                {job.observaciones || "Sin observaciones."}
               </div>
             </div>
             <div className="save-wrapper">
-              <button className="action-button save-button" disabled>Guardar</button>
+              <button className="action-button save-button" disabled>
+                Guardar
+              </button>
             </div>
           </div>
         </section>

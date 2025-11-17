@@ -37,7 +37,7 @@ const App = () => {
       <Route path="/PriceListAdmin" element={<PriceListAdmin />} />{" "}
       {/* Pagina de entrada de trabajos */}
       <Route path="/PreViewJob" element={<PreViewJob />} />{" "}
-      <Route path="/ViewJob" element={<ViewJob />} />{" "}
+      <Route path="/ViewJob/:id" element={<ViewJob />} />{" "}
       {/* Pagina de vista previa de trabajos*/}
       <Route path="/Quotation" element={<Quotation />} />{" "}
       {/*Pagina previa a la generacion del pdf */}

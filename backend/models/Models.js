@@ -137,6 +137,8 @@ const DetalleOrden = sequelize.define(
     copias: { type: DataTypes.INTEGER },
     formato: { type: DataTypes.STRING(30) },
     colores: { type: DataTypes.STRING(30) },
+    papel: { type: DataTypes.STRING(50) },
+    terminacion: { type: DataTypes.STRING(50) },
   },
   {
     tableName: "detalles_orden",

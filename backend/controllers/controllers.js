@@ -53,11 +53,17 @@ const CreateTest = async () => {
       console.log("Cliente de prueba (Tulio Triviño S.A.) creado.");
     }
 
+    // --- INICIO DE LA CORRECCIÓN ---
+    // Buscamos la OT por clienteId y estado, en lugar de 'id: 1'
     const [ot, otCreated] = await OrdenTrabajo.findOrCreate({
-      where: { id: 1 },
+      where: {
+        clienteId: cliente.id,
+        estado: "En Proceso",
+      },
       defaults: {
-        id: 1,
+        // Quitamos 'id: 1' para que use el auto-incremento (consumirá el ID 1)
         fechaIn: new Date(),
+        fechaFin: new Date(new Date().setDate(new Date().getDate() + 7)), // Vence en 7 dias
         prioridad: "A",
         envio: "Retira",
         documento: "Fact",
@@ -65,6 +71,7 @@ const CreateTest = async () => {
         clienteId: cliente.id,
       },
     });
+    // --- FIN DE LA CORRECCIÓN ---
 
     if (otCreated) {
       console.log("Orden de Trabajo de prueba (OT-001) creada.");
@@ -528,7 +535,7 @@ const GetChatMessages = async (req, res) => {
     // Comprobación de seguridad
     const chat = await Chat.findByPk(chatId);
     if (!chat) {
-      return res.status(404).json({ message: "Chat no encontrado" });
+      return res.status(4404).json({ message: "Chat no encontrado" });
     }
     const isParticipant = await chat.hasUsuario(userId); // Verifica N:M
     if (!isParticipant) {
@@ -554,6 +561,128 @@ const GetChatMessages = async (req, res) => {
   }
 };
 
+// ==================================================
+// NUEVOS CONTROLADORES PARA ORDENES DE TRABAJO
+// ==================================================
+
+/**
+ * @route POST /api/ot/crear
+ * @desc Crea una nueva Orden de Trabajo, su Cliente y sus Detalles.
+ * @access Privado
+ */
+const crearOrdenTrabajo = async (req, res) => {
+  // Iniciar transacción
+  const t = await sequelize.transaction();
+
+  try {
+    const { clienteData, ordenData, itemsData } = req.body;
+
+    // 1. Encontrar o crear el Cliente
+    const [cliente] = await Cliente.findOrCreate({
+      where: { nomClien: clienteData.razon },
+      defaults: {
+        nomClien: clienteData.razon,
+        responsable: clienteData.resp,
+        contacto: clienteData.contact,
+        direccion: clienteData.dir,
+      },
+      transaction: t,
+    });
+
+    // 2. Crear la Orden de Trabajo
+    // (Esta es la lógica de la respuesta anterior, que es correcta)
+    const ordenPayload = {
+      fechaIn: ordenData.fechaIn,
+      fechaFin: ordenData.fechaFin,
+      archivo: ordenData.arch,
+      prioridad: ordenData.prioridad,
+      envio: ordenData.envio,
+      documento: ordenData.doc,
+      observaciones: ordenData.observaciones,
+      estado: "Pendiente", // Estado inicial
+      clienteId: cliente.id,
+    };
+
+    // Solo añadimos la 'id' si ordenData.ot NO es un string vacío.
+    if (ordenData.ot) {
+      ordenPayload.id = ordenData.ot;
+    }
+
+    const newOrden = await OrdenTrabajo.create(ordenPayload, { transaction: t });
+
+    // 3. Preparar y crear los Detalles de Orden
+    const itemsValidos = itemsData
+      .filter((item) => item.descripcion && item.descripcion.trim() !== "")
+      .map((item) => ({
+        ...item,
+        ordenTrabajoId: newOrden.id,
+      }));
+
+    if (itemsValidos.length > 0) {
+      await DetalleOrden.bulkCreate(itemsValidos, { transaction: t });
+    }
+
+    // Si todo salió bien, confirmar la transacción
+    await t.commit();
+    res
+      .status(201)
+      .json({ message: "Orden de trabajo creada con éxito", data: newOrden });
+  } catch (error) {
+    // Si algo falló, revertir la transacción
+    await t.rollback();
+    console.error("Error al crear la orden de trabajo:", error);
+    res.status(500).json({
+      message: "Error interno del servidor al crear la orden",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @route GET /api/ot/lista
+ * @desc Obtiene un resumen de todas las órdenes de trabajo, ordenadas por fecha de entrega.
+ * @access Privado
+ */
+const getOrdenesResumen = async (req, res) => {
+  try {
+    const trabajos = await OrdenTrabajo.findAll({
+      attributes: ["id", "fechaFin", "estado"],
+      order: [["fechaFin", "ASC"]], // Ordenar por fecha de entrega (vencimiento) ascendente
+    });
+
+    res.status(200).json(trabajos);
+  } catch (error) {
+    console.error("Error al obtener resumen de órdenes:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+/**
+ * @route GET /api/ot/:id
+ * @desc Obtiene los detalles completos de una Orden de Trabajo específica.
+ * @access Privado
+ */
+const getOrdenDetalle = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const orden = await OrdenTrabajo.findByPk(id, {
+      include: [
+        { model: Cliente }, // Incluye los datos del cliente
+        { model: DetalleOrden }, // Incluye todos los items (detalles)
+      ],
+    });
+
+    if (!orden) {
+      return res.status(404).json({ message: "Orden de trabajo no encontrada" });
+    }
+
+    res.status(200).json(orden);
+  } catch (error) {
+    console.error("Error al obtener detalle de la orden:", error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
 module.exports = {
   SignUp,
   Login,
@@ -573,4 +702,8 @@ module.exports = {
   GetMyChats,
   FindOrCreateChat,
   GetChatMessages,
+  // --- Nuevas funciones ---
+  crearOrdenTrabajo,
+  getOrdenesResumen,
+  getOrdenDetalle,
 };
